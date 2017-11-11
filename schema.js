@@ -9,25 +9,21 @@ const {
 } = require('graphql');
 
 const { createPlayer, getPlayer } = require('./db/players.js');
-  
-const playerType = new GraphQLObjectType({
-   name: 'Player',
-   description: 'A participant in the game',
-   fields: () => ({
-        id: {
-            type: new GraphQLNonNull(GraphQLInt),
-            description: 'The unique identifier for this user'
-        },
-        name: {
-            type: new GraphQLNonNull(GraphQLString),
-            description: 'This\'s player\'s human name'
-        },
-        alive: {
-            type: GraphQLBoolean,
-            description: "Is the player still alive?"
-        }
-   })
-})
+
+/**
+ * Import any required types
+ */
+const playerType = require('./graphql/types/player.js');
+
+/**
+ * Import any requried GraphQL queries
+ */
+const selectPlayer = require('./graphql/queries/select/player.js');
+/**
+ * Import any required GraphQL mutation handlers
+ */
+const createPlayerGQL = require('./graphql/mutations/create/player.js');
+const createRoundGQL = require('./graphql/mutations/create/round.js');
 
 /**
  * Define query handlers
@@ -35,43 +31,15 @@ const playerType = new GraphQLObjectType({
 const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: () => ({
-        player: {
-            type: playerType,
-            args: {
-                id: {
-                    description: 'ID of the player object',
-                    type: new GraphQLNonNull(GraphQLInt)
-                }
-            },
-            resolve: (root, { id }) => getPlayer(id)
-        }
+        player: selectPlayer
     })
 });
 
 const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        createPlayer: {
-            type: playerType,
-            description: "Create a new player",
-            args: {
-                name: {
-                   type: new GraphQLNonNull(GraphQLString)
-                },
-                email: {
-                    type: new GraphQLNonNull(GraphQLString)
-                },
-                game: {
-                    type: new GraphQLNonNull(GraphQLInt)
-                },
-                coordinates: {
-                    type: new GraphQLNonNull(GraphQLString)
-                }
-            },
-            resolve: (root, {name, email, game, coordinates}) => {
-                return createPlayer(name, email, game, coordinates);
-            }
-        }
+        createPlayer: createPlayerGQL,
+        createRound: createRoundGQL
     }
 })
 
