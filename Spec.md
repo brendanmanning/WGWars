@@ -2,24 +2,24 @@
 The following sets forth the specification for the in-development api
 
 ## Player
-[X] createPlayer
-[] selectPlayer
-[] updatePlayer - Particularly for adding push notification id after sign up
-[] killPlayer
+- [X] createPlayer
+- [ ] selectPlayer
+- [ ] updatePlayer - Particularly for adding push notification id after sign up
+- [ ] killPlayer
 
 ## Players
-[ ] selectPlayers
+- [ ] selectPlayers
 
 ## Dispute
-[ ] createDispute
-[ ] resolveDispute
+- [ ] createDispute
+- [ ] resolveDispute
 
 ## Round
-[ ] createRound
-[ ] deleteRound
+- [ ] createRound
+- [ ] deleteRound
 
 ## Rounds
-[ ] nextRound
+- [ ] nextRound
 
 ## Game
-[ ] createMessage
+- [ ] createMessage
