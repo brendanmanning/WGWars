@@ -10,7 +10,7 @@ const {
 
 const PlayerType = require('../../types/player.js');
 
-const { createPlayer, getPlayer } = require('../../../db/players.js');
+const { createPlayer, getPlayer, getPlayers } = require('../../../db/players.js');
 
 /**
  *  Defines the GraphQL player(id: Int) query
@@ -30,7 +30,8 @@ var selectPlayer = {
  * Defines the GraphQL players(game: Int, alive: Bool?, count: Int?, offset: Int?)
  */
 var selectPlayers = {
-    type: GraphQLList(PlayerType),
+    type: new GraphQLList(PlayerType),
+    description: "Selects players from a game.",
     args: {
         game: {
             type: new GraphQLNonNull(GraphQLInt),
@@ -38,7 +39,11 @@ var selectPlayers = {
         },
         alive: {
             type: GraphQLBoolean,
-            description: 'Show only users which are still alive?'
+            description: 'Show only users which are/are not still alive?'
+        },
+        paid: {
+            type: GraphQLBoolean,
+            description: 'Show only users which have/have not paid the admin yet'
         },
         count: {
             type: GraphQLInt,
@@ -48,7 +53,8 @@ var selectPlayers = {
             type: GraphQLInt,
             description: 'Specify an offset (useful for pagation)'
         }
-    }
+    },
+    resolve: (root, { game, alive, paid, count, offset}) => getPlayers(game, alive, paid, count, offset)
 }
 
 module.exports = { selectPlayer, selectPlayers };
