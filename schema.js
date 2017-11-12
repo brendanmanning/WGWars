@@ -51,30 +51,3 @@ module.exports = new GraphQLSchema({
     mutation: mutationType,
     types: [ PlayerType ],
 });
-  
-  /*type Game {
-    admin: Player
-    rounds: [Round]
-    state: GameState
-    winners: [Player]
-}
-type Round {
-    survivors: Integer
-    active: Boolean
-    start: Integer
-    end: Integer
-}
-type Player {
-    id: String
-    name: String
-    email: String
-    verified: Boolean
-    alive: Boolean
-    target: Player
-}
-
-enum GameState {
-    NOTSTARTED
-    ACTIVE
-    FINISHED
-}*/
