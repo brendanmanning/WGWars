@@ -7,11 +7,11 @@ const {
     GraphQLString
 } = require('graphql');
 
-const playerType = require('../../types/player.js');
+const PlayerType = require('../../types/player.js');
 const { createPlayer } = require('../../../db/players.js');
 
 const createPlayerGQL = {
-    type: playerType,
+    type: PlayerType,
     description: "Create a new player",
     args: {
         name: {
