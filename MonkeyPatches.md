@@ -4,4 +4,5 @@ For right now, the multiple game feature is not being implemented, but space is 
 - [ ] getRound(game) is called with argument of 1 in 
 
 ## Player
-- [ ] db/players.js createPlayer assumes created players are alive on two different lines 
+- [ ] db/players.js createPlayer assumes created players are alive on two different lines
+- [ ] db/players.js updatePlayer manually converts booleans to integers 

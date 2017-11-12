@@ -1,5 +1,5 @@
 var get_database_connection = require('../db.js');
-
+var mysql = require('mysql');
 /**
  * Selects multiple players from a given game.
  * Supports operations for pagation
@@ -83,19 +83,20 @@ async function createPlayer(name, email, game, coordinates) {
 async function updatePlayer(id, delta) {
     var database = await get_database_connection();
     
-    var sql = "UPDATE players SET id=id";
+    var sql = "UPDATE players SET ? WHERE id=?";
+    var updates = {};
     var options = [];
 
-    for(var prop of delta) {
+    // Thanks to node-mysql's transformation of objects to MySQL-safe strings,
+    // we can just take all the defined properties (those we want to update)
+    // and make a new updates (delta) object out of that.
+    for(var prop in delta) {
         if(delta[prop] != undefined) {
-            sql += ",?=?";
-            options.push(prop);
-            options.push(delta[prop]) ;
+            updates[prop] = delta[prop];
         }
     }
 
-    sql += " WHERE id = ?";
-    options.push(id);
+    options = [updates, id];
 
     await database.query(sql, options);
 
@@ -104,7 +105,7 @@ async function updatePlayer(id, delta) {
     options = [id];
 
     var results = await database.query(sql, options);
-    return results;
+    return results[0];
 
 }
 
