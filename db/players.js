@@ -108,4 +108,9 @@ async function updatePlayer(id, delta) {
 
 }
 
-module.exports = { getPlayers, getPlayer, createPlayer } ;
+module.exports = { 
+    getPlayers, 
+    getPlayer, 
+    createPlayer, 
+    updatePlayer 
+} ;
