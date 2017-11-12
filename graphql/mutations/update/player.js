@@ -39,7 +39,7 @@ const updatePlayerGQL = {
             description: "This player's device ID for the push notification service we're using"
         },
         coordinates: {
-            type: new GraphQLNonNull(GraphQLString),
+            type: GraphQLString,
             description: 'The geographic coordinates ("latitude,longitude") of this player\'s home'
         }
     },
