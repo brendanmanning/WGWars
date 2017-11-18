@@ -1,4 +1,4 @@
-const midpoint = require('midpoint.js');
+const { midpoint, distance } = require('./math.js');
 
 /**
  * Randomly assigns each player a target to kill, with consideration given to distance between targets (to prevent unnecessay driving)
@@ -16,14 +16,15 @@ function assignTargets(players, randomness) {
 
     /* Calculate the midpoint of all the players' homes */
     var coordinates = players.map(p => p.coordinates);
-    var midpoint = midpoint(coordinates);
+    var center = midpoint(coordinates);
     coordinates = null; // Free up some memory
 
     /* Sort the players by their distance from the center */
     players.sort(function(p1,p2) {
-        return distance(p2.coordinates, midpoint) - distance(p1.coordinates, midpoint);
+        return distance(p2.coordinates, center) - distance(p1.coordinates, center);
     });
 
+    var initialkiller = players[0];
     var killer = players[0];
     var target = null;
 
@@ -32,9 +33,35 @@ function assignTargets(players, randomness) {
         // Sort the players by their distance to this player
         // Naturally, index 0 will be the player himself
         players.sort(function(p1, p2) {
-            return distance(p2.coordinates, killer.coordinates) - distance(p2.coordinates, midpoint);
+            return distance(p1.coordinates, killer.coordinates) - distance(p2.coordinates, killer.coordinates);
         });
 
+        // Pick the player that is a random indexes away
+        var index = Math.floor(Math.random() * randomness) + 1;
+        target = players[index];
 
+        // Add a target object
+        targetassignments.push({
+            killer: killer,
+            target: target
+        });
+
+        // Make this player kill someone now
+        killer = target;
+
+        // Remove the target from the players availabvle to be killed
+        players.splice(index, 1);
     }
+
+    // Loop back around to the beginning
+    targetassignments.push({
+        killer: killer,
+        target: initialkiller
+    })
+
+    return targetassignments;
+
+   // console.log(JSON.stringify(targetassignments));
 }
+
+module.exports = assignTargets;
