@@ -18,27 +18,31 @@ function randomplayers(count) {
         });
     }
 
-    var url = "http://brendanmanning.com/for~development/plotpoints.php";
-
-    var names = "&labels=";
-    var lons = "&longitudes=";
-    var lats = "&latitudes=";
-
-    for(var i = 0; i < players.length; i++) {
-        names += players[i].name
-        lons += players[i].coordinates[1]
-        lats += players[i].coordinates[0];
-
-        if(i != players.length - 1) {
-            names += ","
-            lons += ","
-            lats += ","
-        }
-    }
-
-    url += "?center=45,-75" + names + lons + lats;
-
-    return url;
+    return players;
 }
 
-console.log(randomplayers(100));
+function mapPlayers(players) {
+    var url = "http://brendanmanning.com/for~development/plotpoints.php";
+    
+        var names = "&labels=";
+        var lons = "&longitudes=";
+        var lats = "&latitudes=";
+    
+        for(var i = 0; i < players.length; i++) {
+            names += players[i].name
+            lons += players[i].coordinates[1]
+            lats += players[i].coordinates[0];
+    
+            if(i != players.length - 1) {
+                names += ","
+                lons += ","
+                lats += ","
+            }
+        }
+    
+        url += "?center=45,-75" + names + lons + lats;
+    
+        return url;
+}
+
+module.exports = { randomplayers, mapPlayers };
