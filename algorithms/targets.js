@@ -6,62 +6,104 @@ const { midpoint, distance } = require('./math.js');
  * @param {int} randomness A positive integer 1-infinity. Higher numbers allow more targets to be further from each other (and thus more random). A value of 1 assigns every player to the closest available target to them
  * @returns {{TargetAssignment}} An array of objects. Each object has the following properties: killer, target.
  */
-function assignTargets(players, randomness) {
+function assignTargets(players, k) {
 
-    if(randomness < 1) {
-        return [];
+    var centroids = [];
+    var centers = [];
+
+    // Pick first cluster center
+    centers.push(players[0].coordinates);
+    centroids.push([]);
+
+    // Pick k-1 cluster centers
+    for(var j = 1; j < k; j++) {
+        centroids.push([]); // Add the centroid array for this k (used later on)
+        var leadingdistance = 0;
+        var leadingpoint = null;
+        for(var l = 1; l < players.length; l++) {
+            var thisdistance = 0;
+            for(var c = 0; c < centers.length; c++) {
+                thisdistance += distance(centers[c], players[l].coordinates);
+            }
+            if(thisdistance > leadingdistance) {
+                leadingdistance = thisdistance;
+                leadingpoint = players[l].coordinates;
+            }
+        }
+        centers.push(leadingpoint);
     }
 
-    var targetassignments = [];
+    // Place the points near the closes centroid
+    for(var p = 0; p < players.length; p++) {
 
-    /* Calculate the midpoint of all the players' homes */
-    var coordinates = players.map(p => p.coordinates);
-    var center = midpoint(coordinates);
-    coordinates = null; // Free up some memory
+        // All of this finds the nearest centroid
+        var centroid = -1;
+        var smallestdistance = 0;
+        var firstrun = true;
+        for(var c = 0; c < centers.length; c++) {
+            if(firstrun) {
+                smallestdistance = distance(players[p].coordinates, centers[c]);
+                centroid = c;
+                firstrun = false;
+            } else {
+                var dist = distance(players[p].coordinates, centers[c]);
+                if(dist < smallestdistance) {
+                    smallestdistance = dist;
+                    centroid = c;
+                }
+            }
+        }
 
-    /* Sort the players by their distance from the center */
-    players.sort(function(p1,p2) {
-        return distance(p2.coordinates, center) - distance(p1.coordinates, center);
-    });
+        // Add it to the centroid
+        centroids[centroid].push(players[p].coordinates);
 
-    var initialkiller = players[0];
-    var killer = players[0];
-    var target = null;
-
-    while(targetassignments.length < players.length * 2) {
-
-        // Sort the players by their distance to this player
-        // Naturally, index 0 will be the player himself
-        players.sort(function(p1, p2) {
-            return distance(p1.coordinates, killer.coordinates) - distance(p2.coordinates, killer.coordinates);
-        });
-
-        // Pick the player that is a random indexes away
-        var index = Math.floor(Math.random() * randomness) + 1;
-        target = players[index];
-
-        // Add a target object
-        targetassignments.push({
-            killer: killer,
-            target: target
-        });
-
-        // Make this player kill someone now
-        killer = target;
-
-        // Remove the target from the players availabvle to be killed
-        players.splice(index, 1);
+        // Recalculate the centroid's center
+        centers[centroid] = midpoint(centroids[centroid]);
     }
 
-    // Loop back around to the beginning
-    targetassignments.push({
-        killer: killer,
-        target: initialkiller
-    })
+    // Check if any centroids have only one element
+    var c = 0;
+    while (c < centroids.length) {
+        if(centroids[c].length == 1) {
 
-    return targetassignments;
+            // Find the nearest centroid
+            var shortest = 0;
+            var centroid = -1;
+            var first = true;
+            for(var cc = 0; cc < centroids.length; cc++) {
+                
+                if(cc == c) {
+                    continue;
+                }
 
-   // console.log(JSON.stringify(targetassignments));
+                var dist = distance(centers[cc], centroids[c][0]);
+                if(first || dist < shortest) {
+                    shortest = dist;
+                    centroid = cc;
+                    first = false;
+                }
+            }
+
+            // Add this to the closest centroid
+            centroids[centroid].push(centroids[c][0]);
+
+            // Remove the center for this centroid
+            centers.splice(c,1);
+            centroids.splice(c,1);
+        }
+
+        c++;
+    }
+
+    console.log(JSON.stringify(centroids));
+
+    // TODO: - Reassign to closes centroid
+
+    // TODO: - Group killers/targets
+    var targets = [];
+    for(var c = 0; c < centroids.length; c++) {
+        
+    }
 }
 
 module.exports = assignTargets;
