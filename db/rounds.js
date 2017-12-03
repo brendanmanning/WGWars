@@ -3,6 +3,7 @@ var { performance, magicValues } = require('../constants.js');
 
 var { getPlayers } = require('./players.js');
 var { assignTargets } = require('../algorithms/targets.js');
+var { createAssignment } = require('./assignments.js');
 
 /**
  * Returns all the created for a game 
@@ -31,7 +32,10 @@ async function createRound(game, survivors) {
     // Create target assignments for this round
     var assignments = assignTargets(getPlayers(magicValues.game, true, true), performance.targetclusters);
 
-    // 
+    // Add the target assignments to the database
+    for(var assignment of assignments) {
+        createAssignment(lastInsertId, assignment);
+    }
 
     return {
         id: lastInsertId,
