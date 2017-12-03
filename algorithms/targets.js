@@ -95,15 +95,41 @@ function assignTargets(players, k) {
         c++;
     }
 
-    console.log(JSON.stringify(centroids));
+    // TODO: - Make this less expensive
+    // Map the coordinates back to the original player objects
+    for(var c = 0; c < centroids.length; c++) {
+        for(var p = 0; p < centroids[c].length; p++) {
+            for(var player of players) {
+                if(player.coordinates == centroids[c][p].coordinates) {
+                    centroids[c][p] = player;
+                    break;
+                }
+            }
+        }
+    }
 
     // TODO: - Reassign to closes centroid
 
     // TODO: - Group killers/targets
-    var targets = [];
+    var assignments = [];
     for(var c = 0; c < centroids.length; c++) {
-        
+        for(var p = 0; p < centroids[c].length; p++) {
+
+            // Assign like so:
+            // 0 kills 1
+            // 1 kills 2
+            // 2 kills 0
+            var killer = centroids[c][p];
+            var target = centroids[c][(p == centroids[c].length - 1) ? 0 : (p+1) ];
+
+            assignments.push({
+                killer: killer,
+                target: target
+            })
+        }
     }
+
+    return assignments;
 }
 
 module.exports = assignTargets;
