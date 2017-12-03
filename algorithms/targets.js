@@ -132,4 +132,4 @@ function assignTargets(players, k) {
     return assignments;
 }
 
-module.exports = assignTargets;
+module.exports = { assignTargets };
