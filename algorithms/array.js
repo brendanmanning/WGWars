@@ -1,3 +1,8 @@
+/**
+ * Shuffle (and return) an array
+ * @param {*} array The array to shuffle
+ * @returns {*} A shuffled copy of the original array
+ */
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
   
