@@ -17,9 +17,11 @@ async function getAssignments(round) {
  * @param {Object} assignment The target assignment object
  * @returns {Object} The newly created target record as a JSON object
  */
-async function createAssignment(round) {
+async function createAssignment(round, assignment) {
     var database = await get_database_connection();
-    var results = await database.query("INSERT INTO targets", [round]);
+    var results = await database.query("INSERT INTO targets (round, killer, target) VALUES (?,?,?)", 
+        [round, assignment.killer.id, assignment.target.id]
+    );
     return results;
 }
 
