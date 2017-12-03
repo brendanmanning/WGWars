@@ -100,7 +100,7 @@ function assignTargets(players, k) {
     for(var c = 0; c < centroids.length; c++) {
         for(var p = 0; p < centroids[c].length; p++) {
             for(var player of players) {
-                if(player.coordinates == centroids[c][p].coordinates) {
+                if(player.coordinates == centroids[c][p]) {
                     centroids[c][p] = player;
                     break;
                 }
