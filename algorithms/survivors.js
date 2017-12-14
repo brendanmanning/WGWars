@@ -21,6 +21,7 @@ async function survivors(round) {
     var players = {};
     var medians = [];
     var lows = [];
+    var bottom = [];
     
     var survivors = [];
 
@@ -45,7 +46,7 @@ async function survivors(round) {
     }
 
     // Loop through every player & find those with prestige == 1 (killed & !got killed)
-    for(var p of players) {
+    for(var p in players) {
         var player = players[p];
 
         if(player["prestige"] == 1) {
@@ -61,7 +62,7 @@ async function survivors(round) {
     }
 
     // Find all those who have prestige = 0
-    for(var p of players) {
+    for(var p in players) {
         var player = players[p];
 
         if(player["prestige"] == 0) {
@@ -85,7 +86,7 @@ async function survivors(round) {
     }
 
     // Pick all those who have prestige zero (They should be all that's left)
-    for(var p of players) {
+    for(var p in players) {
         bottom.push(players[p]);
     }
 

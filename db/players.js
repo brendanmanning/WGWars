@@ -117,13 +117,13 @@ async function updatePlayer(id, delta) {
  * @param {object} delta The changes to make to the players
  */
 async function updateAllActivePlayers(game, delta) {
-    var players = getPlayers(game, undefined, true, undefined, 0);
+    var players = getPlayers(game, true, true, undefined, undefined);
 
-    for(var player of players) {
+    for(var player in players) {
         updatePlayer(player.id, delta);
     }
 
-    return;
+    return true;
 }
 
 module.exports = { 

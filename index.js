@@ -57,7 +57,7 @@ async function main() {
   var database = await get_database_connection();
   var results = await database.query('select * from players');
   for(result of results) {
-    console.log(JSON.stringify(result));
+    //console.log(JSON.stringify(result));
   }
 }
 

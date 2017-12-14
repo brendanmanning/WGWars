@@ -7,5 +7,12 @@ module.exports = {
         sql: {
             none: '--none--'
         }
+    },
+    messages: {
+        rounds: {
+            activation: {
+                success: "New round has begun!"
+            }
+        }
     }
 }

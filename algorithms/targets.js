@@ -99,7 +99,7 @@ function assignTargets(players, k) {
     // Map the coordinates back to the original player objects
     for(var c = 0; c < centroids.length; c++) {
         for(var p = 0; p < centroids[c].length; p++) {
-            for(var player of players) {
+            for(var player in players) {
                 if(player.coordinates == centroids[c][p]) {
                     centroids[c][p] = player;
                     break;

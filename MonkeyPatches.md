@@ -13,3 +13,6 @@ For right now, the multiple game feature is not being implemented, but space is 
 
 ## Target Assignments
 - [ ] De-mapping and Re-mapping is VERY algorithmetically expensive
+
+## rounds.js
+- [ ] return the 0th index of the sql array

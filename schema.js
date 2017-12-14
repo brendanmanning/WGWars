@@ -19,12 +19,14 @@ const PlayerType = require('./graphql/types/player.js');
  * Import any requried GraphQL queries
  */
 const { selectPlayer, selectPlayers } = require('./graphql/queries/select/player.js');
+
 /**
  * Import any required GraphQL mutation handlers
  */
 const createPlayerGQL = require('./graphql/mutations/create/player.js');
 const createRoundGQL = require('./graphql/mutations/create/round.js');
 const updatePlayerGQL = require('./graphql/mutations/update/player.js');
+const activateRoundGQL = require('./graphql/mutations/activate/round.js');
 
 /**
  * Define query handlers
@@ -42,7 +44,8 @@ const mutationType = new GraphQLObjectType({
     fields: {
         createPlayer: createPlayerGQL,
         createRound: createRoundGQL,
-        updatePlayer: updatePlayerGQL
+        updatePlayer: updatePlayerGQL,
+        activateRound: activateRoundGQL
     }
 })
 
