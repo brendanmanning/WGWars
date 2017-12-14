@@ -1,9 +1,12 @@
 var get_database_connection = require('../db.js');
 var { performance, magicValues } = require('../constants.js');
 
-var { getPlayers } = require('./players.js');
+var { getPlayers, updatePlayer, updateAllActivePlayers } = require('./players.js');
 var { assignTargets } = require('../algorithms/targets.js');
+var { survivors } = require('../algorithms/survivors.js');
 var { createAssignment } = require('./assignments.js');
+
+var { notification } = require('../actions/notification.js');
 
 /**
  * Returns all the created for a game 
@@ -13,6 +16,36 @@ async function getRounds(game) {
     var database = await get_database_connection();
     var results = await database.query("SELECT id, survivors, active FROM rounds WHERE game=?", [game]);
     return results;
+}
+
+/**
+ * Ends an old round
+ * @param {int} round id of the round we're ending
+ * @returns {int} The number of surviving players
+ */
+async function endRound(round) {
+    var database = await get_database_connection();
+    
+    // Pick the survivors from this round
+    var survivors = await survivors(round);
+
+    // Mark everyone as dead
+    await updateAllActivePlayers({
+        alive: false
+    });
+
+    // Go back and re-mark all the survivors alive
+    for(var survivor of survivors) {
+        
+        await updatePlayer(survivor.id, {
+            alive: true
+        })
+
+        await notification(survivor.id, {
+            title: "Congrats! You advanced!",
+            message: survivor.reason
+        });
+    }
 }
 
 /**
@@ -41,6 +74,15 @@ async function createRound(game, survivors) {
         id: lastInsertId,
         survivors: survivors
     }
+}
+
+/**
+ * Activates and existing round and ends all prior ones
+ * @param {int} round The id of the round to begin
+ * @returns {string} A message indicating the status of the operation
+ */
+async function activateRound(round) {
+    
 }
 
 module.exports = { 

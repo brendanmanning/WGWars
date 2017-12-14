@@ -23,3 +23,6 @@ The following sets forth the specification for the in-development api
 
 ## Game
 - [ ] createMessage
+
+## Push Notifications
+- [ ] notification
