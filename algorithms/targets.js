@@ -21,6 +21,7 @@ function assignTargets(players, k) {
         var leadingdistance = 0;
         var leadingpoint = null;
         for(var l = 1; l < players.length; l++) {
+            console.log("player (" + l + ")" + JSON.stringify(players[l]));
             var thisdistance = 0;
             for(var c = 0; c < centers.length; c++) {
                 thisdistance += distance(centers[c], players[l].coordinates);
@@ -99,7 +100,7 @@ function assignTargets(players, k) {
     // Map the coordinates back to the original player objects
     for(var c = 0; c < centroids.length; c++) {
         for(var p = 0; p < centroids[c].length; p++) {
-            for(var player in players) {
+            for(var player of players) {
                 if(player.coordinates == centroids[c][p]) {
                     centroids[c][p] = player;
                     break;
