@@ -1,5 +1,8 @@
 var { getAssignments } = require('../db/assignments.js');
+var { getPlayers } = require('../db/players.js');
 var { shuffle } = require('./array.js');
+
+var { magicValues } = require('../constants.js');
 /**
  * Chooses the survivors of a round like so:
  *   > Those who killed their target and weren't killed : Automatically advances
@@ -34,11 +37,19 @@ async function survivors(round) {
         bottom: 0
     };
 
+    // Get all living players from this round in array format & transform into object format
+    var dbplayers = await getPlayers(magicValues.game, true, true);
+    for(var p of dbplayers) {
+        players[parseInt(p.id)] = p;
+    }
+
     // Get all the assignments for this round
     var assignments = await getAssignments(round);
-
+    console.log("PLAYERS == " + JSON.stringify(players));
+console.log("Assignments: " + JSON.stringify(assignments));
     // Keep track of the statistics for every player as we loop through the data
     for(var assignment of assignments) {
+        console.log("\tAssignment: " + JSON.stringify(assignment));
         players[assignment.killer]["killed"] = assignment.completed;
         players[assignment.killer]["prestige"] += (assignment.completed) ? 1 : 0;
         players[assignment.target]["gotkilled"] = assignment.completed;

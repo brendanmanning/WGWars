@@ -14,5 +14,8 @@ For right now, the multiple game feature is not being implemented, but space is 
 ## Target Assignments
 - [ ] De-mapping and Re-mapping is VERY algorithmetically expensive
 
+## Survivors
+- [ ] Something about the way JSON works, the id's were being added to the player's object as strings, not ints for keys. Used parseInt() to fix this.
+
 ## rounds.js
 - [ ] return the 0th index of the sql array

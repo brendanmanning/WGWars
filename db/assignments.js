@@ -26,5 +26,6 @@ async function createAssignment(round, assignment) {
 }
 
 module.exports = {
-    getAssignments
+    getAssignments,
+    createAssignment
 }

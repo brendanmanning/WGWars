@@ -14,7 +14,7 @@ var { notification } = require('../actions/notification.js');
  */
 async function getRounds(game) {
     var database = await get_database_connection();
-    var results = await database.query("SELECT id, survivors, active FROM rounds WHERE game=?", [game]);
+    var results = await database.query("SELECT * FROM rounds WHERE game=?", [game]);
     return results;
 }
 
@@ -31,6 +31,9 @@ async function endRound(round) {
     
     // Pick the survivors from this round
     var _survivors = await survivors(round);
+
+
+    console.log("SURVIVORS of round " + round + ": " + JSON.stringify(_survivors));
 
     // Mark everyone as dead
     await updateAllActivePlayers({
@@ -71,16 +74,6 @@ async function createRound(game, survivors) {
     );
     var lastInsertId = result['insertId'];
 
-    // Create target assignments for this round
-    var players = await getPlayers(magicValues.game, true, true)
-    console.log(JSON.stringify(players));
-    var assignments = assignTargets(await getPlayers(magicValues.game, true, true), performance.targetclusters);
-
-    // Add the target assignments to the database
-    for(var assignment in assignments) {
-        createAssignment(lastInsertId, assignment);
-    }
-
     return {
         id: lastInsertId,
         survivors: survivors
@@ -97,18 +90,29 @@ async function activateRound(round) {
 
     for(var r = 0; r < rounds.length; r++) {
         var thisround = rounds[r];
+        console.log(JSON.stringify(thisround));
         if(thisround.active == 1) {
             await endRound(thisround.id);
         }
     }
 
-    // TODO: Check if there are any pending disputes
-
+    // Set the database record to active=1
     var database = await get_database_connection();
     var result = await database.query(
         'UPDATE rounds SET active=1 WHERE id=?',  
         [round]
     );
+
+    // Create target assignments for this round
+    var players = await getPlayers(magicValues.game, true, true);
+    console.log("[ debug ]: Players still alive: " + JSON.stringify(players));
+    var assignments = assignTargets(await getPlayers(magicValues.game, true, true), performance.targetclusters);
+    console.log("[ debug ]: Assignments = " + JSON.stringify(assignments));
+    // Add the target assignments to the database
+    for(var assignment of assignments) {
+        console.log("\t[ debug ]: Creating assignment: " + JSON.stringify(assignment));
+        createAssignment(round, assignment);
+    }
 
     // Return only the first (and only) result
     var r = await database.query(
