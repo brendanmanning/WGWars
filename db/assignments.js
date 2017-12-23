@@ -25,7 +25,27 @@ async function createAssignment(round, assignment) {
     return results;
 }
 
+/**
+ * Completes an assignment (Kills a player)
+ * @param {int} assignment The assignment to complete
+ * @return {[Object]} A JSON repreentation of the assignment completed
+ */
+async function completeAssignment(assignment) {
+    var database = await get_database_connection();
+
+    // Mark the assignment completed in the database
+    var results = await database.query("UPDATE targets SET completed=1 WHERE id=?", [assignment]);
+    var assignment = await database.query("SELECT * FROM targets WHERE id=?", [assignment]);
+
+    // Kill the player
+    await database.query("UPDATE players SET alive=0 WHERE id=?", [assignment[0]["target"]]);
+
+    // Return the completed assignment object
+    return assignment[0];
+}
+
 module.exports = {
     getAssignments,
-    createAssignment
+    createAssignment,
+    completeAssignment
 }

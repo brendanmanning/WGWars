@@ -32,20 +32,19 @@ async function endRound(round) {
     // Pick the survivors from this round
     var _survivors = await survivors(round);
 
-
     console.log("SURVIVORS of round " + round + ": " + JSON.stringify(_survivors));
 
     // Mark everyone as dead
-    await updateAllActivePlayers({
+    /*await updateAllActivePlayers({
         alive: false
-    });
+    });*/
 
     // Go back and re-mark all the survivors alive
     for(var survivor in _survivors) {
         
-        await updatePlayer(survivor.id, {
+        /*await updatePlayer(survivor.id, {
             alive: true
-        })
+        })*/
 
         await notification(survivor.id, {
             title: "Congrats! You advanced!",

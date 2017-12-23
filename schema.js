@@ -27,6 +27,7 @@ const createPlayerGQL = require('./graphql/mutations/create/player.js');
 const createRoundGQL = require('./graphql/mutations/create/round.js');
 const updatePlayerGQL = require('./graphql/mutations/update/player.js');
 const activateRoundGQL = require('./graphql/mutations/activate/round.js');
+const completeAssignmentGQL = require('./graphql/mutations/complete/assignment.js');
 
 /**
  * Define query handlers
@@ -45,7 +46,8 @@ const mutationType = new GraphQLObjectType({
         createPlayer: createPlayerGQL,
         createRound: createRoundGQL,
         updatePlayer: updatePlayerGQL,
-        activateRound: activateRoundGQL
+        activateRound: activateRoundGQL,
+        completeAssignment: completeAssignmentGQL
     }
 })
 

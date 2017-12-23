@@ -15,7 +15,7 @@ var { magicValues } = require('../constants.js');
  * @param {int} round The round that is ending
  * @returns {[Object]} An array of objects that contain surviving players AND an explanation (String) of why they survived.
  */
-async function survivors(round) {
+/*async function survivors(round) {
     
     // Define variables
     var countsurvivors = 5;
@@ -110,6 +110,11 @@ console.log("Assignments: " + JSON.stringify(assignments));
     }
 
     return survivors;
+}*/
+
+async function survivors(game) {
+    var dbplayers = await getPlayers(magicValues.game, true, true);
+    return dbplayers;
 }
 
 module.exports = {
