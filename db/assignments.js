@@ -9,7 +9,7 @@ async function getAssignment(id) {
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM targets WHERE id=?", [id]);
     var result = results[0];
-
+    
     result.killer = await getPlayer(result.killer);
     result.target = await getPlayer(result.target);
 
