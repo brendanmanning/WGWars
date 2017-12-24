@@ -1,13 +1,18 @@
 var get_database_connection = require('../db.js');
-
+var { getPlayer } = require('./players.js');
 /**
  * Gets an assignment with a given id
  * @param {int} id The id of the assignment to get
- * @returns {Object} The assignment database object
+ * @returns {Object} The assignment database object, with player objects inserted
  */
 async function getAssignment(id) {
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM targets WHERE id=?", [id]);
+    var result = results[0];
+
+    result.killer = await getPlayer(result.killer);
+    result.target = await getPlayer(result.target);
+
     return results[0];
 }
 

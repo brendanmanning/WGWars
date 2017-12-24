@@ -1,5 +1,7 @@
 var get_database_connection = require('../db.js');
 var mysql = require('mysql');
+
+const { getAssignment } = require('./assignments.js');
 /**
  * Selects multiple players from a given game.
  * Supports operations for pagation
@@ -47,28 +49,21 @@ async function getPlayers(game, alive, paid, count, offset) {
  */
 async function getPlayer(id) {
 
-
-
     // Get the player record
     var database = await get_database_connection();
     var player = await database.query('SELECT * FROM players WHERE id=?', [id]);
     player = player[0]
    
-    // Get the lastest target assignment's id
-    var targetid = await database.query("select target from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
-    targetid = targetid[0]['target']
-    
-    // Get the player with that id
-    var target = await database.query('SELECT * FROM players WHERE id=?', [targetid]);
-    target = target[0]
+    // Get the lastest target assignment's i
+    var assignmentid = await database.query("select id from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
+    assignmentid = assignmentid[0]['id']
 
     // If the player is dead, they don't have a target
     if(player.alive == false) {
-        target = null;
+        player.assignment = null;
+    } else {
+        player.assignment = getAssignment(targetid)
     }
-
-    // Add their target's profile to the user
-    player["target"] = target;
 
     return player;
 }
