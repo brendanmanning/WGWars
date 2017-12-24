@@ -37,13 +37,18 @@ var root = {
 };*/
 
 var app = express();
-app.use(cors());
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Accept-Encoding, Accept-Language, Access-Control-Request-Headers, Access-Control-Request-Method");
+  next();
+});
 app.use('/graphql', graphqlHTTP({
   schema: schema,
   rootValue: {
   
   },
-  graphiql: true,
+  graphiql: false,
 }));
  app.listen(4000);
 console.log('Running a GraphQL API server at localhost:4000/graphql');
@@ -51,7 +56,6 @@ console.log('Running a GraphQL API server at localhost:4000/graphql');
 
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-
 
 
 var get_database_connection = require('./db.js');
