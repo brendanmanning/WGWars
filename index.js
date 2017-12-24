@@ -10,6 +10,8 @@ var schema = require('./schema');
 // Imports for my own programming
 var fs = require('fs');
 
+var cors = require('cors');
+
 /*
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(fs.readFileSync(__dirname + '/schema.gql'));
@@ -35,9 +37,12 @@ var root = {
 };*/
 
 var app = express();
+app.use(cors());
 app.use('/graphql', graphqlHTTP({
   schema: schema,
-  rootValue: root,
+  rootValue: {
+  
+  },
   graphiql: true,
 }));
  app.listen(4000);
