@@ -7,12 +7,12 @@ const {
     GraphQLString
 } = require('graphql');
 
-const AssignmentType = require('assignment.js');
-
 const PlayerType = new GraphQLObjectType({
     name: 'Player',
     description: 'A participant in the game',
-    fields: () => ({
+    fields: function() {
+        const AssignmentType = require('./assignment.js');
+        return({
          id: {
              type: new GraphQLNonNull(GraphQLInt),
              description: 'The unique identifier for this user'
@@ -29,7 +29,8 @@ const PlayerType = new GraphQLObjectType({
              type: AssignmentType,
              description: "The assignment object for the player this round"
          }
-    })
+        });
+    }
 })
 
 module.exports = PlayerType;

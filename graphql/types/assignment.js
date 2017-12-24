@@ -7,12 +7,12 @@ const {
     GraphQLString
 } = require('graphql');
 
-const PlayerType = require('player.js');
-
 const AssignmentType = new GraphQLObjectType({
     name: 'Assignment',
     description: 'Defines who should kill who',
-    fields: () => ({
+    fields: function() {
+        const PlayerType = require('./player.js');
+        return ({
          id: {
              type: new GraphQLNonNull(GraphQLInt),
              description: 'The unique identifier for this assignment'
@@ -29,7 +29,8 @@ const AssignmentType = new GraphQLObjectType({
              type: GraphQLBoolean,
              description: "Has the target been killed yet?"
          }
-    })
+        });
+    }
 })
 
 module.exports = AssignmentType;
