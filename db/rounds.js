@@ -21,30 +21,21 @@ async function getRounds(game) {
 /**
  * Ends an old round
  * @param {int} round id of the round we're ending
- * @returns {int} The number of surviving players
+ * @returns {Object} The round that was ended
  */
 async function endRound(round) {
 
     console.log("[ debug ]: Ending round " + round);
-
-    var database = await get_database_connection();
     
     // Pick the survivors from this round
+    var database = await get_database_connection();
     var _survivors = await survivors(round);
 
     console.log("SURVIVORS of round " + round + ": " + JSON.stringify(_survivors));
+    console.log(_survivors.length + " players survived!!");
 
-    // Mark everyone as dead
-    /*await updateAllActivePlayers({
-        alive: false
-    });*/
-
-    // Go back and re-mark all the survivors alive
+    // Notify all survivors that they're good
     for(var survivor in _survivors) {
-        
-        /*await updatePlayer(survivor.id, {
-            alive: true
-        })*/
 
         await notification(survivor.id, {
             title: "Congrats! You advanced!",
@@ -54,9 +45,14 @@ async function endRound(round) {
 
     // Actually mark this rounds over
     await database.query(
-        'UPDATE rounds SET active=0 WHERE id=?',
-        [round]
+        'UPDATE rounds SET active=0, survivors=? WHERE id=?',
+        [_survivors.length, round]
     );
+
+    // Get the ended round
+    var round = await database.query('SELECT * FROM rounds WHERE id=?', [round]);
+
+    return round[0];
 }
 
 /**
@@ -65,17 +61,17 @@ async function endRound(round) {
  * @param {int} survivors The maximum number of players that should remain after this round
  * @returns The newly created round
  */
-async function createRound(game, survivors) {
+async function createRound(game) {
     var database = await get_database_connection();
     var result = await database.query(
-        'INSERT INTO rounds (game, survivors) VALUES (?,?)',  
-        [game, survivors]
+        'INSERT INTO rounds (game, survivors) VALUES (?,-1)',  
+        [game]
     );
     var lastInsertId = result['insertId'];
 
     return {
         id: lastInsertId,
-        survivors: survivors
+        survivors: -1
     }
 }
 
@@ -87,13 +83,13 @@ async function createRound(game, survivors) {
 async function activateRound(round) {
     var rounds = await getRounds(magicValues.game);
 
-    for(var r = 0; r < rounds.length; r++) {
+    /*for(var r = 0; r < rounds.length; r++) {
         var thisround = rounds[r];
         console.log(JSON.stringify(thisround));
         if(thisround.active == 1) {
             await endRound(thisround.id);
         }
-    }
+    }*/
 
     // Set the database record to active=1
     var database = await get_database_connection();

@@ -22,6 +22,10 @@ const PlayerType = new GraphQLObjectType({
          alive: {
              type: GraphQLBoolean,
              description: "Is the player still alive?"
+         },
+         target: {
+             type: PlayerType,
+             description: "The player they are assigned to kill this round (if there is one)"
          }
     })
 })

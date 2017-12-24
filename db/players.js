@@ -46,9 +46,31 @@ async function getPlayers(game, alive, paid, count, offset) {
  * @returns the player's database row as a JSON object
  */
 async function getPlayer(id) {
+
+
+
+    // Get the player record
     var database = await get_database_connection();
-    var results = await database.query('select * from players WHERE id=? LIMIT 1', [id]);
-    return results[0];
+    var player = await database.query('SELECT * FROM players WHERE id=?', [id]);
+    player = player[0]
+   
+    // Get the lastest target assignment's id
+    var targetid = await database.query("select target from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
+    targetid = targetid[0]['target']
+    
+    // Get the player with that id
+    var target = await database.query('SELECT * FROM players WHERE id=?', [targetid]);
+    target = target[0]
+
+    // If the player is dead, they don't have a target
+    if(player.alive == false) {
+        target = null;
+    }
+
+    // Add their target's profile to the user
+    player["target"] = target;
+
+    return player;
 }
 
 /**

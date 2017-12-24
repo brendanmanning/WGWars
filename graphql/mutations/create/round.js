@@ -17,14 +17,10 @@ const createRoundGQL = {
         game: {
            type: new GraphQLNonNull(GraphQLInt),
            description: "The id of the game to attatch this round to"
-        },
-        survivors: {
-            type: new GraphQLNonNull(GraphQLInt),
-            description: "The maximum number of players which should remain after this round"
         }
     },
-    resolve: (root, {game, survivors}) => {
-        return createRound(game, survivors);
+    resolve: (root, {game}) => {
+        return createRound(game);
     }
 }
 

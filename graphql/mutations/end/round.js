@@ -8,20 +8,20 @@ const {
 } = require('graphql');
 
 const roundType = require('../../types/round.js');
-const { activateRound } = require('../../../db/rounds.js');
+const { endRound } = require('../../../db/rounds.js');
 
-const activateRoundGQL = {
+const endRoundGQL = {
     type: roundType,
-    description: "Start an existing round",
+    description: "End a round",
     args: {
         id: {
-            type: new GraphQLNonNull(GraphQLInt),
-            description: "The id of the round to begin"
+           type: new GraphQLNonNull(GraphQLInt),
+           description: "The id of the round to end"
         }
     },
     resolve: (root, {id}) => {
-        return activateRound(id);
+        return endRound(id);
     }
 }
 
-module.exports = activateRoundGQL;
+module.exports = endRoundGQL;

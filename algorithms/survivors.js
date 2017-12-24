@@ -1,8 +1,10 @@
 var { getAssignments } = require('../db/assignments.js');
-var { getPlayers } = require('../db/players.js');
+var { getPlayers, updatePlayer } = require('../db/players.js');
 var { shuffle } = require('./array.js');
 
 var { magicValues } = require('../constants.js');
+
+var get_database_connection = require('../db.js');
 /**
  * Chooses the survivors of a round like so:
  *   > Those who killed their target and weren't killed : Automatically advances
@@ -112,9 +114,33 @@ console.log("Assignments: " + JSON.stringify(assignments));
     return survivors;
 }*/
 
-async function survivors(game) {
+/**
+ * Gets the survivors of a round
+ * @param {int} round id of the round
+ * @returns {Object[]} All player objects that killed their target & didn't die
+ */
+async function survivors(round) {
     var dbplayers = await getPlayers(magicValues.game, true, true);
-    return dbplayers;
+    var survivors = [];
+
+    // Make sure they completed their assignment
+    var database = await get_database_connection();
+    for(var p = 0; p < dbplayers.length; p++) {
+        var result = await database.query("SELECT completed FROM targets WHERE killer=? AND round=?", [dbplayers[p]['id'], round]);
+        if(result[0]["completed"] == 1) {
+           survivors.push(dbplayers[p]); 
+        } else {
+
+            // Kill the player
+            updatePlayer(dbplayers[p].id, {
+                alive: false
+            })
+
+            // Notify them why they died
+        }
+    }
+
+    return survivors;
 }
 
 module.exports = {

@@ -1,4 +1,5 @@
 const { midpoint, distance } = require('./math.js');
+const { shuffle } = require('./array.js');
 
 /**
  * Randomly assigns each player a target to kill, with consideration given to distance between targets (to prevent unnecessay driving)
@@ -7,6 +8,12 @@ const { midpoint, distance } = require('./math.js');
  * @returns {{TargetAssignment}} An array of objects. Each object has the following properties: killer, target.
  */
 function assignTargets(players, k) {
+
+    
+
+    /*if(players < 5) {
+        k = 2;
+    }
 
     var centroids = [];
     var centers = [];
@@ -33,6 +40,8 @@ function assignTargets(players, k) {
         }
         centers.push(leadingpoint);
     }
+
+    console.log("assigning targets ...");
 
     // Place the points near the closes centroid
     for(var p = 0; p < players.length; p++) {
@@ -128,6 +137,20 @@ function assignTargets(players, k) {
                 target: target
             })
         }
+    }
+
+    */
+
+    var players = shuffle(players);
+
+    var assignments = [];
+    for(var i = 0; i < players.length; i++) {
+        var killer = players[i];
+        var target = players[( (i + 1 < players.length) ? i + 1 : 0 )];
+        assignments.push({
+            killer: killer,
+            target: target
+        })
     }
 
     return assignments;
