@@ -61,6 +61,7 @@ async function completeAssignment(assignment) {
 }
 
 module.exports = {
+    getAssignment,
     getAssignments,
     createAssignment,
     completeAssignment
