@@ -7,6 +7,8 @@ const {
     GraphQLString
 } = require('graphql');
 
+const AssignmentType = require('assignment.js');
+
 const PlayerType = new GraphQLObjectType({
     name: 'Player',
     description: 'A participant in the game',
@@ -23,9 +25,9 @@ const PlayerType = new GraphQLObjectType({
              type: GraphQLBoolean,
              description: "Is the player still alive?"
          },
-         target: {
-             type: PlayerType,
-             description: "The player they are assigned to kill this round (if there is one)"
+         assignment: {
+             type: AssignmentType,
+             description: "The assignment object for the player this round"
          }
     })
 })
