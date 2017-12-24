@@ -62,7 +62,7 @@ async function getPlayer(id) {
     if(player.alive == false) {
         player.assignment = null;
     } else {
-        player.assignment = getAssignment(targetid)
+        player.assignment = getAssignment(assignmentid)
     }
 
     return player;
