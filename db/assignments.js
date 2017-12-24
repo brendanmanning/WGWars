@@ -1,6 +1,17 @@
 var get_database_connection = require('../db.js');
 
 /**
+ * Gets an assignment with a given id
+ * @param {int} id The id of the assignment to get
+ * @returns {Object} The assignment database object
+ */
+async function getAssignment(id) {
+    var database = await get_database_connection();
+    var results = await database.query("SELECT * FROM targets WHERE id=?", [id]);
+    return results[0];
+}
+
+/**
  * Returns all the target assignments for a given round
  * @param {int} round The round ID to find results for
  * @return {[Object]} A JSON repreentation of the MySQL result 
