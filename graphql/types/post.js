@@ -17,6 +17,10 @@ const PostType = new GraphQLObjectType({
              type: new GraphQLNonNull(GraphQLInt),
              description: 'The unique identifier for this post'
          },
+         game: {
+             type: new GraphQLNonNull(GraphQLInt),
+             description: 'The game this was posted to'
+         },
          creator: {
              type: PlayerType,
              description: 'The profile of the player that made this post'
