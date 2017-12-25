@@ -11,7 +11,7 @@ async function createPost(game, creator, data) {
 
     var database = await get_database_connection();
 
-    var timestamp = (Date.getTime() / 1000);
+    var timestamp = new Date() / 1000;
     var result = await database.query("INSERT INTO feed (game, creator, data, timestamp) VALUES (?,?,?,?)", [game, creator, data, timestamp]);
 
     creator = await getPlayer(creator);
