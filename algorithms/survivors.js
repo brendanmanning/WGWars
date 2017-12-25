@@ -140,6 +140,8 @@ async function survivors(round) {
         }
     }
 
+    database.destroy();
+
     return survivors;
 }
 

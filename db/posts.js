@@ -16,6 +16,8 @@ async function createPost(game, creator, data) {
 
     creator = await getPlayer(creator);
 
+    database.destroy();
+
     return {
         id: result['insertId'],
         game: game,
@@ -54,6 +56,8 @@ async function getPosts(game, count, offset) {
         results[i]['creator'] = await getPlayer(results[i]['creator']);
     }
     
+    database.destroy();
+
     return results;  
 }
 

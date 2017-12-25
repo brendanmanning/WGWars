@@ -14,6 +14,8 @@ async function getAssignment(id) {
     result.killer = await getPlayer(result.killer, true);
     result.target = await getPlayer(result.target, true);
 
+    database.destroy();
+
     return results[0];
 }
 
@@ -25,6 +27,9 @@ async function getAssignment(id) {
 async function getAssignments(round) {
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM targets WHERE round=?", [round]);
+    
+    database.destroy();
+    
     return results;
 }
 
@@ -39,6 +44,9 @@ async function createAssignment(round, assignment) {
     var results = await database.query("INSERT INTO targets (round, killer, target) VALUES (?,?,?)", 
         [round, assignment.killer.id, assignment.target.id]
     );
+
+    database.destroy();
+
     return results;
 }
 
@@ -56,6 +64,8 @@ async function completeAssignment(assignment) {
 
     // Kill the player
     await database.query("UPDATE players SET alive=0 WHERE id=?", [assignment[0]["target"]]);
+
+    database.destroy();
 
     // Return the completed assignment object
     return assignment[0];

@@ -56,18 +56,3 @@ console.log('Running a GraphQL API server at localhost:4000/graphql');
 
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-
-
-var get_database_connection = require('./db.js');
-var { getPlayers } = require('./db/players');
-
-
-async function main() {
-  var database = await get_database_connection();
-  var results = await database.query('select * from players');
-  for(result of results) {
-    //console.log(JSON.stringify(result));
-  }
-}
-
-main();

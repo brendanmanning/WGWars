@@ -39,6 +39,9 @@ async function getPlayers(game, alive, paid, count, offset) {
     }
 
     var results = await database.query(sql, options);
+
+    database.destroy();
+
     return results;
 }
 
@@ -56,6 +59,7 @@ async function getPlayer(id, norecurse) {
     player = player[0];
 
     if(norecurse) {
+        database.destroy();
         return player;
     }
    
@@ -70,6 +74,7 @@ async function getPlayer(id, norecurse) {
         player.assignment = await getAssignment(assignmentid);
     }
 
+    database.destroy();
     return player;
 }
 
@@ -88,6 +93,9 @@ async function createPlayer(name, email, game, coordinates) {
         [name, email, game, coordinates, 1]
     );
     var lastInsertId = result['insertId'];
+
+    database.destroy();
+
     return {
         id: result['insertId'],
         name: name,
@@ -129,6 +137,9 @@ async function updatePlayer(id, delta) {
     options = [id];
 
     var results = await database.query(sql, options);
+
+    database.destroy();
+
     return results[0];
 
 }
@@ -139,10 +150,10 @@ async function updatePlayer(id, delta) {
  * @param {object} delta The changes to make to the players
  */
 async function updateAllActivePlayers(game, delta) {
-    var players = getPlayers(game, true, true, undefined, undefined);
+    var players = await getPlayers(game, true, true, undefined, undefined);
 
     for(var player in players) {
-        updatePlayer(player.id, delta);
+        await updatePlayer(player.id, delta);
     }
 
     return true;

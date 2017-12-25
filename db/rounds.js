@@ -15,6 +15,7 @@ var { notification } = require('../actions/notification.js');
 async function getRounds(game) {
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM rounds WHERE game=?", [game]);
+    database.destroy();
     return results;
 }
 
@@ -52,6 +53,8 @@ async function endRound(round) {
     // Get the ended round
     var round = await database.query('SELECT * FROM rounds WHERE id=?', [round]);
 
+    database.destroy();
+
     return round[0];
 }
 
@@ -68,6 +71,8 @@ async function createRound(game) {
         [game]
     );
     var lastInsertId = result['insertId'];
+
+    database.destroy();
 
     return {
         id: lastInsertId,
@@ -115,6 +120,7 @@ async function activateRound(round) {
         [round]
     );
 
+    database.destroy();
     return r[0];
 }
 
