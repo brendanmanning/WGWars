@@ -45,24 +45,29 @@ async function getPlayers(game, alive, paid, count, offset) {
 /**
  * Gets a player by their database id
  * @param {int} id 
+ * @param {bool?} norecurse If this is true, assignment data will not be fetched for this object. Because assignments themselves contain player objects, this must eventually be set to true so as to avoid infinite recursion
  * @returns the player's database row as a JSON object
  */
-async function getPlayer(id) {
+async function getPlayer(id, norecurse) {
 
     // Get the player record
     var database = await get_database_connection();
     var player = await database.query('SELECT * FROM players WHERE id=?', [id]);
-    player = player[0]
+    player = player[0];
+
+    if(norecurse) {
+        return player;
+    }
    
     // Get the lastest target assignment's i
     var assignmentid = await database.query("select id from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
-    assignmentid = assignmentid[0]['id']
+    assignmentid = assignmentid[0]['id'];
 
     // If the player is dead, they don't have a target
     if(player.alive == false) {
         player.assignment = null;
     } else {
-        player.assignment = getAssignment(assignmentid)
+        player.assignment = await getAssignment(assignmentid);
     }
 
     return player;
