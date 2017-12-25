@@ -20,7 +20,7 @@ async function createPost(game, creator, data) {
         id: result['insertId'],
         game: game,
         creator: creator,
-        data: JSON.parse(data),
+        data: data,
         timestamp: timestamp
     };
 }

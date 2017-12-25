@@ -22,8 +22,8 @@ const PostType = new GraphQLObjectType({
              description: 'The profile of the player that made this post'
          },
          data: {
-             type: GraphQLObjectType,
-             description: "The JSON data encoded in this post"
+             type: GraphQLString,
+             description: "The JSON data encoded in this post as a string"
          },
          timestamp: {
              type: new GraphQLNonNull(GraphQLInt),

@@ -11,7 +11,7 @@ const PostType = require('../../types/post.js');
 const { createPost } = require('../../../db/posts.js');
 
 const createPostGQL = {
-    type: PlayerType,
+    type: PostType,
     description: "Create a new post",
     args: {
         game: {
