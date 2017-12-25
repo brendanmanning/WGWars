@@ -15,6 +15,10 @@ const DisputeType = new GraphQLObjectType({
              type: new GraphQLNonNull(GraphQLInt),
              description: 'The unique identifier for this dispute'
          },
+         complainer: {
+             type: new GraphQLNonNull(GraphQLInt),
+             description: '0 if the killer / 1 if the target'
+         },
          round: {
              type: new GraphQLNonNull(GraphQLInt),
              description: 'The round in which this dispute occurred'
