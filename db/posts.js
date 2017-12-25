@@ -28,11 +28,27 @@ async function createPost(game, creator, data) {
 /**
  * Gets all the post items for a game
  * @param {int} game The game ID to fetch posts for
+ * @param {int} count The number of posts to fetch
+ * @param {int} offste the offset for which to fetch posts
  * @returns {Object[]} an array of post object
  */
-async function getPosts(game) {
+async function getPosts(game, count, offset) {
     var database = await get_database_connection();
-    var results = await database.query("SELECT id, creator, data, timestamp FROM feed WHERE visible=1 AND game=?");
+
+    var sql = "SELECT id, creator, data, timestamp FROM feed WHERE visible=1 AND game=?";
+    var options = [game];
+
+    if(count != undefined) {
+        sql += " LIMIT ?";
+        options.push(count);
+    }
+
+    if(offset != undefined) {
+        sql += " OFFSET ?";
+        options.push(offset);
+    }
+
+    var results = await database.query(sql, options);
     
     for(var i = 0; i < results.length; i++) {
         results[i]['creator'] = await getPlayer(results[i]['creator']);

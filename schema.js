@@ -20,6 +20,7 @@ const PlayerType = require('./graphql/types/player.js');
  */
 const { selectPlayer, selectPlayers } = require('./graphql/queries/select/player.js');
 const { selectDispute, selectDisputes } = require('./graphql/queries/select/dispute.js');
+const { selectPosts } = require('./graphql/queries/select/post.js');
 
 /**
  * Import any required GraphQL mutation handlers
@@ -42,7 +43,8 @@ const queryType = new GraphQLObjectType({
         player: selectPlayer,
         players: selectPlayers,
         dispute: selectDispute,
-        disputes: selectDisputes
+        disputes: selectDisputes,
+        posts: selectPosts
     })
 });
 
