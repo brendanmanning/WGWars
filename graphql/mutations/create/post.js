@@ -28,7 +28,7 @@ const createPostGQL = {
         }
     },
     resolve: (root, {game, creator, data}) => {
-        return createPlayer(game, creator, data);
+        return createPost(game, creator, data);
     }
 }
 
