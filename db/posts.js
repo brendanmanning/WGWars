@@ -40,3 +40,8 @@ async function getPosts(game) {
     
     return results;  
 }
+
+module.exports = {
+    createPost,
+    getPosts
+};
