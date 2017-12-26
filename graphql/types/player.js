@@ -21,6 +21,14 @@ const PlayerType = new GraphQLObjectType({
              type: new GraphQLNonNull(GraphQLString),
              description: 'This\'s player\'s human name'
          },
+         email: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'This player\'s email address'
+         },
+         image: {
+            type: GraphQLString,
+            description: 'The URL of this player\'s profile icon'
+         },
          alive: {
              type: GraphQLBoolean,
              description: "Is the player still alive?"

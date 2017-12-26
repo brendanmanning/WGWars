@@ -26,6 +26,10 @@ const updatePlayerGQL = {
             type: GraphQLString,
             description: 'This player\'s email (should not be publically visible)'
         },
+        image: {
+            type: GraphQLString,
+            description: 'This player\'s profile icon URL'
+        },
         alive: {
             type: GraphQLBoolean,
             description: 'Is the user alive?'
@@ -43,10 +47,11 @@ const updatePlayerGQL = {
             description: 'The geographic coordinates ("latitude,longitude") of this player\'s home'
         }
     },
-    resolve: (root, {id, name, email, alive, paid, pnid, coordinates}) => {
+    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates}) => {
         return updatePlayer(id, {
             name: name,
             email: email,
+            image: image,
             alive: alive, 
             paid: paid, 
             pnid: pnid, 

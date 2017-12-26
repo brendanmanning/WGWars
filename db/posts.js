@@ -37,7 +37,7 @@ async function createPost(game, creator, data) {
 async function getPosts(game, count, offset) {
     var database = await get_database_connection();
 
-    var sql = "SELECT id, creator, data, timestamp FROM feed WHERE visible=1 AND game=?";
+    var sql = "SELECT id, creator, data, timestamp FROM feed WHERE visible=1 AND game=? ORDER BY timestamp DESC";
     var options = [game];
 
     if(count != undefined) {
