@@ -1,4 +1,7 @@
 var get_database_connection = require('../db.js');
+
+var { authAssignment } = require('../auth/assignment.js');
+
 /**
  * Gets an assignment with a given id
  * @param {int} id The id of the assignment to get
@@ -8,6 +11,12 @@ async function getAssignment(id, context) {
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM targets WHERE id=?", [id]);
     var result = results[0];
+
+    // Does this viewer have permission to this resource?
+    if(!authAssignment(result, context.requester)) {
+        throw new Error("You do not have access to this resource (Assignment)");
+        return null;
+    }
 
     var { getPlayer } = require('./players.js');
 

@@ -1,7 +1,7 @@
 var get_database_connection = require('../db.js');
 var mysql = require('mysql');
 
-var { authPlayer, authPlayers } = require('../auth/player.js');
+var { authPlayer, authPlayers, authUpdatePlayer } = require('../auth/player.js');
 
 const { getAssignment } = require('./assignments.js');
 /**
@@ -14,7 +14,15 @@ const { getAssignment } = require('./assignments.js');
  * @param {int} offset The offset from which to select (useful for pagation)
  * @returns {object[]} An array of players from the database
  */
-async function getPlayers(game, alive, paid, count, offset) {
+async function getPlayers(game, alive, paid, count, offset, context) {
+
+    // Since the authorization of this function doesn't depend on the data
+    // (only admin users can list users)...just perform the auth now
+    if(!authPlayers(undefined, context.requester)) {
+        throw new Error("You do not have access to this resource (Players)");
+        return null;
+    }
+
     var database = await get_database_connection();
 
     var options = [game];
@@ -65,7 +73,8 @@ async function getPlayer(id, context, norecurse) {
 
     // Does the viewer have permission to this result?
     if(!authPlayer(player, context.requester)) {
-        throw new Error("You do not have permission to see this user!");
+        throw new Error("You do not have permission to view this resource (Player)");
+        return null;
     }
 
     if(norecurse) {
@@ -122,7 +131,14 @@ async function createPlayer(name, email, game, coordinates) {
  * @param {object} delta An object consisting of the new value for the following properties: name,email.alive,paid,pnid,coordinates. If a value is undefined, it will not be updated.
  * @returns {object} The updated player object
  */
-async function updatePlayer(id, delta) {
+async function updatePlayer(id, delta, context) {
+
+    // Authorize right away
+    if(!authUpdatePlayer(id, context.requester)) {
+        throw new Error("You do not have access to this mutation (UpdatePlayer)");
+        return null;
+    }
+
     var database = await get_database_connection();
     
     var sql = "UPDATE players SET ? WHERE id=?";

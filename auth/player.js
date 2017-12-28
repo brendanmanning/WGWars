@@ -15,10 +15,27 @@ function authPlayer(object, viewer) {
 }
 
 function authPlayers(objects, viewer) {
+    
+    // Only the admin can list all users
+    if(viewer.isAdmin) {
+        return true;
+    }
+
+    return false;
+}
+
+function authUpdatePlayer(id, viewer) {
+
+    // Only the player (or an admin) can update a user
+    if(id == viewer.id || viewer.isAdmin) {
+        return true;
+    }
+
     return false;
 }
 
 module.exports = {
     authPlayer,
-    authPlayers
+    authPlayers,
+    authUpdatePlayer
 }

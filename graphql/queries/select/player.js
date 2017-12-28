@@ -54,7 +54,7 @@ var selectPlayers = {
             description: 'Specify an offset (useful for pagation)'
         }
     },
-    resolve: (root, { game, alive, paid, count, offset}) => getPlayers(game, alive, paid, count, offset)
+    resolve: (root, { game, alive, paid, count, offset}, context) => getPlayers(game, alive, paid, count, offset, context)
 }
 
 module.exports = { selectPlayer, selectPlayers };

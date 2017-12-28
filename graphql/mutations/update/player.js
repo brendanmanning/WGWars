@@ -47,7 +47,7 @@ const updatePlayerGQL = {
             description: 'The geographic coordinates ("latitude,longitude") of this player\'s home'
         }
     },
-    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates}) => {
+    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates}, context) => {
         return updatePlayer(id, {
             name: name,
             email: email,
@@ -56,7 +56,7 @@ const updatePlayerGQL = {
             paid: paid, 
             pnid: pnid, 
             coordinates: coordinates
-        });
+        }, context);
     }
 }
 
