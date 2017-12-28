@@ -23,7 +23,7 @@ var selectPlayer = {
             type: new GraphQLNonNull(GraphQLInt)
         }
     },
-    resolve: (root, { id }) => getPlayer(id)
+    resolve: (root, { id }, context) => getPlayer(id, context)
 };
 
 /**

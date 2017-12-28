@@ -51,7 +51,11 @@ async function getPlayers(game, alive, paid, count, offset) {
  * @param {bool?} norecurse If this is true, assignment data will not be fetched for this object. Because assignments themselves contain player objects, this must eventually be set to true so as to avoid infinite recursion
  * @returns the player's database row as a JSON object
  */
-async function getPlayer(id, norecurse) {
+async function getPlayer(id, context, norecurse) {
+
+    console.log("CONTEXT OBJECT");
+    console.log(JSON.stringify(context));
+
 
     // Get the player record
     var database = await get_database_connection();
@@ -71,7 +75,7 @@ async function getPlayer(id, norecurse) {
     if(player.alive == false) {
         player.assignment = null;
     } else {
-        player.assignment = await getAssignment(assignmentid);
+        player.assignment = await getAssignment(assignmentid, context);
     }
 
     database.destroy();
