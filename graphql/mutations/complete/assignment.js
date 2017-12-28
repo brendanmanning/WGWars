@@ -19,8 +19,8 @@ const completeAssignmentGQL = {
            description: 'Id of the assignment to kill'
         }
     },
-    resolve: (root, {id}) => {
-        return completeAssignment(id);
+    resolve: (root, {id}, context) => {
+        return completeAssignment(id, context);
     }
 }
 

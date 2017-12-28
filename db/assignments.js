@@ -1,6 +1,10 @@
 var get_database_connection = require('../db.js');
 
-var { authAssignment, authAssignments } = require('../auth/assignment.js');
+var { 
+    authAssignment, 
+    authAssignments,
+    authCompleteAssignment 
+} = require('../auth/assignment.js');
 
 /**
  * Gets an assignment with a given id
@@ -63,9 +67,17 @@ async function createAssignment(round, assignment) {
 /**
  * Completes an assignment (Kills a player)
  * @param {int} assignment The assignment to complete
+ * @param {Object} context The context object passed from express
  * @return {[Object]} A JSON repreentation of the assignment completed
  */
-async function completeAssignment(assignment) {
+async function completeAssignment(assignment, context) {
+
+    // Validate ahead of time
+    if(!authCompleteAssignment(assignmentid, context.requester)) {
+        throw new Error("You do not have access to this mutation (CompleteAssignment)");
+        return null;
+    }
+
     var database = await get_database_connection();
 
     // Mark the assignment completed in the database

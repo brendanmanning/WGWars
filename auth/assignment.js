@@ -13,6 +13,11 @@ function authAssignments(viewer) {
     return viewer.isAdmin;
 }
 
+function authCompletedAssignment(assignmentid, viewer) {
+    return viewer.assignment.id == assignmentid;
+}
+
 module.exports = {
-    authAssignment
+    authAssignment,
+    authCompletedAssignment
 }
