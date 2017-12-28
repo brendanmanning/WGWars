@@ -76,7 +76,7 @@ async function endRound(round, context) {
  * @param {int} survivors The maximum number of players that should remain after this round
  * @returns The newly created round
  */
-async function createRound(game) {
+async function createRound(game, context) {
 
     // Authorize right now
     if(!authCreateRound(context.requester)) {
@@ -104,7 +104,7 @@ async function createRound(game) {
  * @param {int} round The id of the round to begin
  * @returns {object} The round we just activated
  */
-async function activateRound(round) {
+async function activateRound(round, context) {
 
     // Authorize right now
     if(!authActivateRound(context.requester)) {
