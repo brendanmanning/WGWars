@@ -1,13 +1,21 @@
-function authCreateRound(viewer) {
-    return viewer.isAdmin;
+var { isAdmin } = require('./game.js');
+var { getGame } = require('../db/rounds');
+
+async function authCreateRound(gameid, viewer) {
+    var valid = await isAdmin(viewer, gameid);
+    return valid;
 }
 
-function authActivateRound(viewer) {
-    return viewer.isAdmin;
+async function authActivateRound(round, viewer) {
+    var gameid = await getGame(round);
+    var valid = await isAdmin(viewer, gameid);
+    return valid;
 }
 
-function authEndRound(viewer) {
-    return viewer.isAdmin;
+async function authEndRound(round, viewer) {
+    var gameid = await getGame(round);
+    var valid = await isAdmin(viewer, gameid);
+    return valid;
 }
 
 module.exports = {

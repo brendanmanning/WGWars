@@ -16,13 +16,6 @@ const { getAssignment } = require('./assignments.js');
  */
 async function getPlayers(game, alive, paid, count, offset, context) {
 
-    // Since the authorization of this function doesn't depend on the data
-    // (only admin users can list users)...just perform the auth now
-    if(!authPlayers(undefined, context.requester)) {
-        throw new Error("You do not have access to this resource (Players)");
-        return null;
-    }
-
     var database = await get_database_connection();
 
     var options = [game];
@@ -50,6 +43,11 @@ async function getPlayers(game, alive, paid, count, offset, context) {
 
     var results = await database.query(sql, options);
 
+    if(! (await authPlayers(results, context.requester))) {
+        throw new Error("You do not have access to this resource (Players)");
+        return null;
+    }
+
     database.destroy();
 
     return results;
@@ -72,7 +70,8 @@ async function getPlayer(id, context, norecurse) {
     player = player[0];
 
     // Does the viewer have permission to this result?
-    if(!authPlayer(player, context.requester)) {
+    var valid = await authPlayer(player, context.requester)
+    if(!valid) {
         throw new Error("You do not have permission to view this resource (Player)");
         return null;
     }
@@ -133,8 +132,12 @@ async function createPlayer(name, email, game, coordinates) {
  */
 async function updatePlayer(id, delta, context) {
 
+    // Get the player first
+    var playerobj = await getPlayer(id, context, true);
+
     // Authorize right away
-    if(!authUpdatePlayer(id, context.requester)) {
+    var valid = await authUpdatePlayer(playerobj, context.requester)
+    if(!valid) {
         throw new Error("You do not have access to this mutation (UpdatePlayer)");
         return null;
     }

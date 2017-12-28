@@ -17,7 +17,8 @@ async function getAssignment(id, context) {
     var result = results[0];
 
     // Does this viewer have permission to this resource?
-    if(!authAssignment(result, context.requester)) {
+    var valid = await authAssignment(result, context.requester);
+    if(!valid) {
         throw new Error("You do not have access to this resource (Assignment)");
         return null;
     }
@@ -73,7 +74,8 @@ async function createAssignment(round, assignment) {
 async function completeAssignment(assignment, context) {
 
     // Validate ahead of time
-    if(!authCompleteAssignment(assignment, context.requester)) {
+    var valid = await authCompleteAssignment(assignment, context.requester);
+    if(!valid) {
         throw new Error("You do not have access to this mutation (CompleteAssignment)");
         return null;
     }

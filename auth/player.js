@@ -1,4 +1,6 @@
-function authPlayer(object, viewer) {
+var { isAdmin } = require('./game.js');
+
+async function authPlayer(object, viewer) {
 
     // The player can see all their own fields
     if(viewer.id == object.id) {
@@ -10,28 +12,34 @@ function authPlayer(object, viewer) {
         return true;
     }
 
-    // Everyone else can see nothing
-    return false;
+    console.log(JSON.stringify(object));
+
+    var valid = (await isAdmin(viewer, object.game));
+    return valid;
 }
 
-function authPlayers(objects, viewer) {
+async function authPlayers(objects, viewer) {
     
     // Only the admin can list all users
-    if(viewer.isAdmin) {
-        return true;
+    for(var i = 0; i < objects.length; i++) {
+        var auth = await authPlayer(objects[i], viewer);
+        if(!auth) {
+            return false;
+        }
     }
 
-    return false;
+    return true;
 }
 
-function authUpdatePlayer(id, viewer) {
+async function authUpdatePlayer(object, viewer) {
 
     // Only the player (or an admin) can update a user
-    if(id == viewer.id || viewer.isAdmin) {
+    if(object.id == viewer.id) {
         return true;
     }
 
-    return false;
+    var valid = await isAdmin(viewer, object.game);
+    return valid;
 }
 
 module.exports = {

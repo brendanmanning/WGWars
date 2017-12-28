@@ -15,6 +15,17 @@ var {
 } = require('../auth/round.js');
 
 /**
+ * Returns the id of a game, given the round id
+ * @param {int} roundid The round's id
+ * @returns {int} The id of the game this round belongs to
+ */
+async function getGame(roundid) {
+    var database = await get_database_connection();
+    var results = await database.query("SELECT game FROM rounds WHERE id=?", [roundid]);
+    return results[0]['game'];
+}
+
+/**
  * Returns all the created for a game 
  * @param game The internal/database id of the games to fetch rounds for
  */
@@ -33,7 +44,8 @@ async function getRounds(game) {
 async function endRound(round, context) {
 
     // Authorize right now
-    if(!authEndRound(context.requester)) {
+    var valid = await authEndRound(round, context.requester)
+    if(!valid) {
         throw new Error("You do not have access to this mutation (EndRound)");
         return null;
     }
@@ -79,7 +91,8 @@ async function endRound(round, context) {
 async function createRound(game, context) {
 
     // Authorize right now
-    if(!authCreateRound(context.requester)) {
+    var valid = await authCreateRound(game, context.requester);
+    if(!valid) {
         throw new Error("You do not have access to this mutation (CreateRound)");
         return null;
     }
@@ -107,7 +120,8 @@ async function createRound(game, context) {
 async function activateRound(round, context) {
 
     // Authorize right now
-    if(!authActivateRound(context.requester)) {
+    var valid = await authActivateRound(round, context.requester);
+    if(!valid) {
         throw new Error("You do not have access to this mutation (ActivateRound)");
         return null;
     }
@@ -151,6 +165,7 @@ async function activateRound(round, context) {
 }
 
 module.exports = { 
+    getGame,
     createRound,
     endRound,
     activateRound
