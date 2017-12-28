@@ -24,7 +24,13 @@ async function getRounds(game) {
  * @param {int} round id of the round we're ending
  * @returns {Object} The round that was ended
  */
-async function endRound(round) {
+async function endRound(round, context) {
+
+    // Authorize right now
+    if(!authEndRound(context.requester)) {
+        throw new Error("You do not have access to this mutation (EndRound)");
+        return null;
+    }
 
     console.log("[ debug ]: Ending round " + round);
     
@@ -65,6 +71,13 @@ async function endRound(round) {
  * @returns The newly created round
  */
 async function createRound(game) {
+
+    // Authorize right now
+    if(!authCreateRound(context.requester)) {
+        throw new Error("You do not have access to this mutation (CreateRound)");
+        return null;
+    }
+
     var database = await get_database_connection();
     var result = await database.query(
         'INSERT INTO rounds (game, survivors) VALUES (?,-1)',  
@@ -86,6 +99,13 @@ async function createRound(game) {
  * @returns {object} The round we just activated
  */
 async function activateRound(round) {
+
+    // Authorize right now
+    if(!authActivateRound(context.requester)) {
+        throw new Error("You do not have access to this mutation (ActivateRound)");
+        return null;
+    }
+
     var rounds = await getRounds(magicValues.game);
 
     /*for(var r = 0; r < rounds.length; r++) {

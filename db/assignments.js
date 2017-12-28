@@ -1,6 +1,6 @@
 var get_database_connection = require('../db.js');
 
-var { authAssignment } = require('../auth/assignment.js');
+var { authAssignment, authAssignments } = require('../auth/assignment.js');
 
 /**
  * Gets an assignment with a given id
@@ -34,6 +34,7 @@ async function getAssignment(id, context) {
  * @return {[Object]} A JSON repreentation of the MySQL result 
  */
 async function getAssignments(round) {
+
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM targets WHERE round=?", [round]);
     

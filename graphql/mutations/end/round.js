@@ -19,8 +19,8 @@ const endRoundGQL = {
            description: "The id of the round to end"
         }
     },
-    resolve: (root, {id}) => {
-        return endRound(id);
+    resolve: (root, {id}, context) => {
+        return endRound(id, context);
     }
 }
 

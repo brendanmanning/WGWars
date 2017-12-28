@@ -9,6 +9,10 @@ function authAssignment(object, viewer) {
     }
 }
 
+function authAssignments(viewer) {
+    return viewer.isAdmin;
+}
+
 module.exports = {
     authAssignment
 }
