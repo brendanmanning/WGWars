@@ -1,6 +1,8 @@
 var get_database_connection = require('../db.js');
 var mysql = require('mysql');
 
+var { authPlayer, authPlayers } = require('../auth/player.js');
+
 const { getAssignment } = require('./assignments.js');
 /**
  * Selects multiple players from a given game.
@@ -56,18 +58,22 @@ async function getPlayer(id, context, norecurse) {
     console.log("CONTEXT OBJECT");
     console.log(JSON.stringify(context));
 
-
     // Get the player record
     var database = await get_database_connection();
     var player = await database.query('SELECT * FROM players WHERE id=?', [id]);
     player = player[0];
+
+    // Does the viewer have permission to this result?
+    if(!authPlayer(player, context.requester)) {
+        throw new Error("You do not have permission to see this user!");
+    }
 
     if(norecurse) {
         database.destroy();
         return player;
     }
    
-    // Get the lastest target assignment's i
+    // Get the lastest target assignment's 
     var assignmentid = await database.query("select id from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
     assignmentid = assignmentid[0]['id'];
 
