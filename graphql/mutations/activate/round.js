@@ -19,8 +19,8 @@ const activateRoundGQL = {
             description: "The id of the round to begin"
         }
     },
-    resolve: (root, {id}) => {
-        return activateRound(id);
+    resolve: (root, {id}, context) => {
+        return activateRound(id, context);
     }
 }
 

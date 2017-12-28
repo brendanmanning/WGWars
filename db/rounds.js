@@ -8,6 +8,12 @@ var { createAssignment } = require('./assignments.js');
 
 var { notification } = require('../actions/notification.js');
 
+var {
+    authCreateRound,
+    authActivateRound,
+    authEndRound
+} = require('../auth/round.js');
+
 /**
  * Returns all the created for a game 
  * @param game The internal/database id of the games to fetch rounds for

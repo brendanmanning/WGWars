@@ -19,8 +19,8 @@ const createRoundGQL = {
            description: "The id of the game to attatch this round to"
         }
     },
-    resolve: (root, {game}) => {
-        return createRound(game);
+    resolve: (root, {game}, context) => {
+        return createRound(game, context);
     }
 }
 
