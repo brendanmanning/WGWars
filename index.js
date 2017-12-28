@@ -63,6 +63,7 @@ app.use('/graphql', graphqlHTTP({
     requester: {
       id: 16,
       assignment: {
+        id: 50,
         killer: 16,
         target: 19
       }

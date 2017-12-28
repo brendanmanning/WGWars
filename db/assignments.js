@@ -73,7 +73,7 @@ async function createAssignment(round, assignment) {
 async function completeAssignment(assignment, context) {
 
     // Validate ahead of time
-    if(!authCompleteAssignment(assignmentid, context.requester)) {
+    if(!authCompleteAssignment(assignment, context.requester)) {
         throw new Error("You do not have access to this mutation (CompleteAssignment)");
         return null;
     }
