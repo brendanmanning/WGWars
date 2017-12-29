@@ -25,10 +25,14 @@ const createPostGQL = {
         data: {
             type: new GraphQLNonNull(GraphQLString),
             description: 'The data for this post in stringified JSON form'
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {game, creator, data}) => {
-        return createPost(game, creator, data);
+    resolve: (root, {game, creator, data, token}) => {
+        return createPost(game, creator, data, token);
     }
 }
 

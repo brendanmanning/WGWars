@@ -78,6 +78,7 @@ async function getPlayer(id, context, norecurse) {
 
     if(norecurse) {
         database.destroy();
+        console.log("[81] Destroyed");
         return player;
     }
    
@@ -100,15 +101,18 @@ async function getPlayer(id, context, norecurse) {
  * 
  * @param {string} name This user's name (will be publically available)
  * @param {string} email The email of the user (will not be publically available)
+ * @param {string} phone The player's phone number
+ * @param {string} uid The player's uid property from firebase
  * @param {int} game The game id to attatch this new round to
  * @param {string} coordinates The coordinates of where this player lives. "latitude,longitude"
  * @returns The newly created player as a JSON object
  */
-async function createPlayer(name, email, game, coordinates) {
+async function createPlayer(name, email, phone, uid, game, coordinates) {
+
     var database = await get_database_connection();
     var result = await database.query(
-        'INSERT INTO players (name, email, game, coordinates, alive) VALUES (?,?,?,?,?)', 
-        [name, email, game, coordinates, 1]
+        'INSERT INTO players (name, email, phone, uid, game, coordinates, alive, image) VALUES (?,?,?,?,?,?,?,?)', 
+        [name, email, phone, uid, game, coordinates, 1, "http://www.eurogeosurveys.org/wp-content/uploads/2014/02/default_profile_pic.jpg"]
     );
     var lastInsertId = result['insertId'];
 
@@ -118,6 +122,8 @@ async function createPlayer(name, email, game, coordinates) {
         id: result['insertId'],
         name: name,
         email: email,
+        phone: phone,
+        uid: uid,
         game: game,
         coordinates: coordinates,
         alive: 1

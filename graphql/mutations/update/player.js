@@ -45,9 +45,13 @@ const updatePlayerGQL = {
         coordinates: {
             type: GraphQLString,
             description: 'The geographic coordinates ("latitude,longitude") of this player\'s home'
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates}, context) => {
+    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates, token}) => {
         return updatePlayer(id, {
             name: name,
             email: email,
@@ -56,7 +60,7 @@ const updatePlayerGQL = {
             paid: paid, 
             pnid: pnid, 
             coordinates: coordinates
-        }, context);
+        }, token);
     }
 }
 

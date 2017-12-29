@@ -19,6 +19,7 @@ async function getAssignment(id, context) {
     // Does this viewer have permission to this resource?
     var valid = await authAssignment(result, context.requester);
     if(!valid) {
+        database.destroy();
         throw new Error("You do not have access to this resource (Assignment)");
         return null;
     }

@@ -17,10 +17,14 @@ const createRoundGQL = {
         game: {
            type: new GraphQLNonNull(GraphQLInt),
            description: "The id of the game to attatch this round to"
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {game}, context) => {
-        return createRound(game, context);
+    resolve: (root, {game, token}) => {
+        return createRound(game, token);
     }
 }
 

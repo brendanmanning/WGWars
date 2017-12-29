@@ -17,10 +17,14 @@ const endRoundGQL = {
         id: {
            type: new GraphQLNonNull(GraphQLInt),
            description: "The id of the round to end"
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id}, context) => {
-        return endRound(id, context);
+    resolve: (root, {id, token}) => {
+        return endRound(id, token);
     }
 }
 

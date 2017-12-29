@@ -1,5 +1,5 @@
 var { isAdmin } = require('./game.js');
-var { getGame } = require('../db/rounds');
+var { getGame } = require('../db/rounds.js');
 
 async function authCreateRound(gameid, viewer) {
     var valid = await isAdmin(viewer, gameid);

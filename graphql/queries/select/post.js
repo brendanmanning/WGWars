@@ -30,9 +30,13 @@ var selectPosts = {
         offset: {
             type: GraphQLInt,
             description: 'Specify an offset (useful for scroll)'
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, { game, count, offset}) => getPosts(game, count, offset)
+    resolve: (root, { game, count, offset, token} ) => getPosts(game, count, offset, token)
 }
 
 module.exports = { selectPosts };

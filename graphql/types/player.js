@@ -25,6 +25,10 @@ const PlayerType = new GraphQLObjectType({
             type: new GraphQLNonNull(GraphQLString),
             description: 'This player\'s email address'
          },
+         phone: {
+             type: new GraphQLNonNull(GraphQLString),
+             description: 'This player\'s phone number'
+         },
          image: {
             type: GraphQLString,
             description: 'The URL of this player\'s profile icon'

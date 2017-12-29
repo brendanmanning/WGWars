@@ -11,6 +11,7 @@ var schema = require('./schema');
 var fs = require('fs');
 
 var cors = require('cors');
+var admin = require("firebase-admin");
 
 /*
 // Construct a schema, using GraphQL schema language
@@ -37,40 +38,35 @@ var root = {
 };*/
 
 var app = express();
-/*
-app.use('/graphql', jwt({
-  secret: 'shhhhhhared-secret',
-  requestProperty: 'auth',
-  credentialsRequired: false,
-}));*/
+
+
+// Allow CORS
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Accept-Encoding, Accept-Language, Access-Control-Request-Headers, Access-Control-Request-Method");
-  next();
+   next();
 });
-/*
-app.use('/graphql', function(req, res, done) {
-  const user = db.User.get(req.auth.sub);
-  req.context = {
-    user: user,
-  }
-  done();
-});*/
-app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  context: {
-    requester: {
-      id: 16,
-      assignment: {
-        id: 50,
-        killer: 16,
-        target: 19
-      }
-    }
-  },
-  graphiql: true,
-}));
+
+
+// Connect with Firebase
+var serviceAccount = require("./firebaseprivatekey.json");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://wgwars-b03fd.firebaseio.com"
+});
+
+
+// Bind to GraphQL
+var buildcontext = require('./buildcontext.js');
+app.use('/graphql', graphqlHTTP(async (request, response, graphQLParams) => ({
+
+    schema: schema,
+    graphiql: true,
+    pretty: true
+  
+})));
+
  app.listen(4000);
 console.log('Running a GraphQL API server at localhost:4000/graphql');
 

@@ -17,10 +17,14 @@ const completeAssignmentGQL = {
         id: {
            type: new GraphQLNonNull(GraphQLInt),
            description: 'Id of the assignment to kill'
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id}, context) => {
-        return completeAssignment(id, context);
+    resolve: (root, {id, token}) => {
+        return completeAssignment(id, token);
     }
 }
 

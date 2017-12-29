@@ -1,4 +1,5 @@
 var { isAdmin } = require('./game.js');
+var { getGame } = require('../db/rounds.js');
 
 async function authAssignment(object, viewer) {
 
@@ -6,10 +7,14 @@ async function authAssignment(object, viewer) {
     console.log("Viewer: " + JSON.stringify(viewer));
 
     // Only the owner should be able to see their assignment
-    var admin = await isAdmin(viewer, object.round);
+    var game = await getGame(object.round);
+    console.log("Game: " + game);
+    var admin = await isAdmin(viewer, game);
     if(viewer.id == object.killer || admin) {
         return true;
     }
+
+    return false;
 }
 
 async function authAssignments(game, viewer) {

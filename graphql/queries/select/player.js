@@ -21,9 +21,13 @@ var selectPlayer = {
         id: {
             description: 'ID of the player object',
             type: new GraphQLNonNull(GraphQLInt)
+        },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, { id }, context) => getPlayer(id, context)
+    resolve: (root, { id , token }) => getPlayer(id, token, false)
 };
 
 /**
