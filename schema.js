@@ -18,7 +18,7 @@ const PlayerType = require('./graphql/types/player.js');
 /**
  * Import any requried GraphQL queries
  */
-const { selectPlayer, selectPlayers } = require('./graphql/queries/select/player.js');
+const { selectPlayer, selectPlayers, me } = require('./graphql/queries/select/player.js');
 const { selectDispute, selectDisputes } = require('./graphql/queries/select/dispute.js');
 const { selectPosts } = require('./graphql/queries/select/post.js');
 
@@ -41,6 +41,7 @@ const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: () => ({
         player: selectPlayer,
+        me: me,
         players: selectPlayers,
         dispute: selectDispute,
         disputes: selectDisputes,

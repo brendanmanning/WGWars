@@ -3,6 +3,7 @@ var mysql = require('mysql');
 
 var { authPlayer, authPlayers, authUpdatePlayer } = require('../auth/player.js');
 
+const { getRound } = require('./rounds.js');
 const { getAssignment } = require('./assignments.js');
 /**
  * Selects multiple players from a given game.
@@ -12,9 +13,11 @@ const { getAssignment } = require('./assignments.js');
  * @param {boolean} paid If set, only players which have/have not paid will be shown
  * @param {int} count The maximum number of results to return
  * @param {int} offset The offset from which to select (useful for pagation)
+ * @param {String} token FB AUth token
+ * @param {Object} context GraphQL's context obj
  * @returns {object[]} An array of players from the database
  */
-async function getPlayers(game, alive, paid, count, offset, context) {
+async function getPlayers(game, alive, paid, count, offset, token, context) {
 
     var database = await get_database_connection();
 
@@ -43,7 +46,7 @@ async function getPlayers(game, alive, paid, count, offset, context) {
 
     var results = await database.query(sql, options);
 
-    if(! (await authPlayers(results, context.requester))) {
+    if(! (await authPlayers(results, token, context.admin))) {
         throw new Error("You do not have access to this resource (Players)");
         return null;
     }
@@ -59,18 +62,18 @@ async function getPlayers(game, alive, paid, count, offset, context) {
  * @param {bool?} norecurse If this is true, assignment data will not be fetched for this object. Because assignments themselves contain player objects, this must eventually be set to true so as to avoid infinite recursion
  * @returns the player's database row as a JSON object
  */
-async function getPlayer(id, context, norecurse) {
-
-    console.log("CONTEXT OBJECT");
-    console.log(JSON.stringify(context));
+async function getPlayer(id, token, context, norecurse) {
 
     // Get the player record
     var database = await get_database_connection();
     var player = await database.query('SELECT * FROM players WHERE id=?', [id]);
     player = player[0];
 
+    console.log("PLAYER OBJECT");
+    console.log(JSON.stringify(player));
+
     // Does the viewer have permission to this result?
-    var valid = await authPlayer(player, context.requester)
+    var valid = await authPlayer(player, token, context.admin)
     if(!valid) {
         throw new Error("You do not have permission to view this resource (Player)");
         return null;
@@ -85,14 +88,28 @@ async function getPlayer(id, context, norecurse) {
     // Get the lastest target assignment's 
     var assignmentid = await database.query("select id from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
     assignmentid = assignmentid[0]['id'];
-
+console.log("Assignment id: "+ assignmentid);
+    
     // If the player is dead, they don't have a target
     if(player.alive == false) {
         player.assignment = null;
     } else {
-        player.assignment = await getAssignment(assignmentid, context);
+        player.assignment = await getAssignment(assignmentid, token, context);
     }
 
+    if(!player.alive) {
+        // If the player is dead, get the assignment in which they were killed
+        var killedAssignment = await database.query("SELECT * FROM targets WHERE target=? AND completed=1", [id]);
+        killedAssignment = killedAssignment[0];
+
+        // Save the round in which they were killed
+        player['eliminationRound'] = killedAssignment.round;
+
+        // Get the player object who killed them
+        player['killer'] = await getPlayer(killedAssignment.killer, token, context, true);
+        player['killer'] = player['killer'][0];
+    }
+    
     database.destroy();
     return player;
 }
@@ -136,13 +153,13 @@ async function createPlayer(name, email, phone, uid, game, coordinates) {
  * @param {object} delta An object consisting of the new value for the following properties: name,email.alive,paid,pnid,coordinates. If a value is undefined, it will not be updated.
  * @returns {object} The updated player object
  */
-async function updatePlayer(id, delta, context) {
+async function updatePlayer(id, delta, token, context) {
 
     // Get the player first
-    var playerobj = await getPlayer(id, context, true);
+    var playerobj = await getPlayer(id, token, context, true);
 
     // Authorize right away
-    var valid = await authUpdatePlayer(playerobj, context.requester)
+    var valid = await authUpdatePlayer(token, context.admin)
     if(!valid) {
         throw new Error("You do not have access to this mutation (UpdatePlayer)");
         return null;
@@ -200,4 +217,4 @@ module.exports = {
     createPlayer, 
     updatePlayer,
     updateAllActivePlayers
-} ;
+};

@@ -1,20 +1,38 @@
 var { isAdmin } = require('./game.js');
-var { getGame } = require('../db/rounds.js');
+const { getGame } = require('../db/rounds.js');
 
-async function authCreateRound(gameid, viewer) {
-    var valid = await isAdmin(viewer, gameid);
+/**
+ * Can we create a new round?
+ * @param {int} gameid ID of the game we're creating a round in
+ * @param {String} token FB auth token
+ * @param {Object} admin FB auth SDK obj
+ */
+async function authCreateRound(gameid, token, admin) {
+    var valid = await isAdmin(gameid, token, admin);
     return valid;
 }
 
-async function authActivateRound(round, viewer) {
+/**
+ * Can we activate a new round?
+ * @param {int} round ID of the round we're activating
+ * @param {String} token FB auth token
+ * @param {Object} admin FB auth SDK obj
+ */
+async function authActivateRound(round, token, admin) {
     var gameid = await getGame(round);
-    var valid = await isAdmin(viewer, gameid);
+    var valid = await isAdmin(gameid, token, admin);
     return valid;
 }
 
-async function authEndRound(round, viewer) {
+/**
+ * Can we end an old round?
+ * @param {int} round ID of the round we're activating
+ * @param {String} token FB auth token
+ * @param {Object} admin FB auth SDK obj
+ */
+async function authEndRound(round, token, admin) {
     var gameid = await getGame(round);
-    var valid = await isAdmin(viewer, gameid);
+    var valid = await isAdmin(gameid, token, admin);
     return valid;
 }
 

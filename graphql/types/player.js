@@ -12,10 +12,15 @@ const PlayerType = new GraphQLObjectType({
     description: 'A participant in the game',
     fields: function() {
         const AssignmentType = require('./assignment.js');
+        const roundType = require('./round.js');
         return({
          id: {
              type: new GraphQLNonNull(GraphQLInt),
              description: 'The unique identifier for this user'
+         },
+         game: {
+             type: new GraphQLNonNull(GraphQLInt),
+             description: 'The id of the game this player is in'
          },
          name: {
              type: new GraphQLNonNull(GraphQLString),
@@ -40,6 +45,14 @@ const PlayerType = new GraphQLObjectType({
          assignment: {
              type: AssignmentType,
              description: "The assignment object for the player this round"
+         },
+         eliminationRoundId: {
+             type: GraphQLInt,
+             description: 'The round in which this player was eliminated'
+         },
+         killer: {
+             type: playerType,
+             description: 'The player who killed this player'
          }
         });
     }

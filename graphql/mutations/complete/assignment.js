@@ -18,13 +18,17 @@ const completeAssignmentGQL = {
            type: new GraphQLNonNull(GraphQLInt),
            description: 'Id of the assignment to kill'
         },
+        video: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'Video of the kill'
+        },
         token: {
             type: new GraphQLNonNull(GraphQLString),
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id, token}) => {
-        return completeAssignment(id, token);
+    resolve: (root, {id, video, token}, context) => {
+        return completeAssignment(id, video, token, context);
     }
 }
 

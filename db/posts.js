@@ -7,14 +7,14 @@ var { getPlayer } = require('./players.js');
  * @param {Object} data the post's data in stringified JSON format
  * @returns {Object} the newly created post as a JSON object or undefined on error
  */
-async function createPost(game, creator, data, context) {
+async function createPost(game, creator, data, token, context) {
 
     var database = await get_database_connection();
 
     var timestamp = new Date() / 1000;
     var result = await database.query("INSERT INTO feed (game, creator, data, timestamp) VALUES (?,?,?,?)", [game, creator, data, timestamp]);
 
-    creator = await getPlayer(creator, context, true);
+    creator = await getPlayer(creator, token, context, true);
 
     database.destroy();
 
@@ -31,10 +31,10 @@ async function createPost(game, creator, data, context) {
  * Gets all the post items for a game
  * @param {int} game The game ID to fetch posts for
  * @param {int} count The number of posts to fetch
- * @param {int} offste the offset for which to fetch posts
+ * @param {int} offset the offset for which to fetch posts
  * @returns {Object[]} an array of post object
  */
-async function getPosts(game, count, offset, context) {
+async function getPosts(game, count, offset, token, context) {
     var database = await get_database_connection();
 
     var sql = "SELECT id, creator, data, timestamp FROM feed WHERE visible=1 AND game=? ORDER BY timestamp DESC";
@@ -52,8 +52,10 @@ async function getPosts(game, count, offset, context) {
 
     var results = await database.query(sql, options);
     
+    console.log("Results: " + JSON.stringify(results));
+
     for(var i = 0; i < results.length; i++) {
-        results[i]['creator'] = await getPlayer(results[i]['creator'], context, true);
+        results[i]['creator'] = await getPlayer(results[i]['creator'], token, context, true);
     }
     
     database.destroy();

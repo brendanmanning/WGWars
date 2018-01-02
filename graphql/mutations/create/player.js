@@ -39,8 +39,8 @@ const createPlayerGQL = {
             description: 'The geographic coordinates ("latitude,longitude") of this player\'s home'
         }
     },
-    resolve: (root, {name, email, phone, uid, game, coordinates}) => {
-        return createPlayer(name, email, phone, uid, game, coordinates);
+    resolve: (root, {name, email, phone, uid, game, coordinates}, context) => {
+        return createPlayer(name, email, phone, uid, game, coordinates, context);
     }
 }
 

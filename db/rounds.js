@@ -41,10 +41,10 @@ async function getRounds(game) {
  * @param {int} round id of the round we're ending
  * @returns {Object} The round that was ended
  */
-async function endRound(round, context) {
+async function endRound(round, token, context) {
 
     // Authorize right now
-    var valid = await authEndRound(round, context.requester)
+    var valid = await authEndRound(round, token, context.admin)
     if(!valid) {
         throw new Error("You do not have access to this mutation (EndRound)");
         return null;
@@ -88,10 +88,10 @@ async function endRound(round, context) {
  * @param {int} survivors The maximum number of players that should remain after this round
  * @returns The newly created round
  */
-async function createRound(game, context) {
+async function createRound(game, token, context) {
 
     // Authorize right now
-    var valid = await authCreateRound(game, context.requester);
+    var valid = await authCreateRound(game, token, context.admin);
     if(!valid) {
         throw new Error("You do not have access to this mutation (CreateRound)");
         return null;
@@ -117,10 +117,10 @@ async function createRound(game, context) {
  * @param {int} round The id of the round to begin
  * @returns {object} The round we just activated
  */
-async function activateRound(round, context) {
+async function activateRound(round, token, context) {
 
     // Authorize right now
-    var valid = await authActivateRound(round, context.requester);
+    var valid = await authActivateRound(round, token, context.admin);
     if(!valid) {
         throw new Error("You do not have access to this mutation (ActivateRound)");
         return null;

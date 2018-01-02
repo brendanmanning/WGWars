@@ -36,7 +36,7 @@ var selectPosts = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, { game, count, offset, token} ) => getPosts(game, count, offset, token)
+    resolve: (root, { game, count, offset, token} , context) => getPosts(game, count, offset, token, context)
 }
 
 module.exports = { selectPosts };

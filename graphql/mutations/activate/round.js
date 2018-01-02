@@ -23,8 +23,8 @@ const activateRoundGQL = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id, token}) => {
-        return activateRound(id, token);
+    resolve: (root, {id, token}, context) => {
+        return activateRound(id, token, context);
     }
 }
 

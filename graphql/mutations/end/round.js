@@ -23,8 +23,8 @@ const endRoundGQL = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id, token}) => {
-        return endRound(id, token);
+    resolve: (root, {id, token}, context) => {
+        return endRound(id, token, context);
     }
 }
 

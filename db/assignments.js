@@ -11,13 +11,13 @@ var {
  * @param {int} id The id of the assignment to get
  * @returns {Object} The assignment database object, with player objects inserted
  */
-async function getAssignment(id, context) {
+async function getAssignment(id, token, context) {
     var database = await get_database_connection();
     var results = await database.query("SELECT * FROM targets WHERE id=?", [id]);
     var result = results[0];
 
     // Does this viewer have permission to this resource?
-    var valid = await authAssignment(result, context.requester);
+    var valid = await authAssignment(result, token, context.admin);
     if(!valid) {
         database.destroy();
         throw new Error("You do not have access to this resource (Assignment)");
@@ -26,8 +26,8 @@ async function getAssignment(id, context) {
 
     var { getPlayer } = require('./players.js');
 
-    result.killer = await getPlayer(result.killer, context, true);
-    result.target = await getPlayer(result.target, context, true);
+    result.killer = await getPlayer(result.killer, token, context, true);
+    result.target = await getPlayer(result.target, token, context, true);
 
     database.destroy();
 
@@ -69,13 +69,14 @@ async function createAssignment(round, assignment) {
 /**
  * Completes an assignment (Kills a player)
  * @param {int} assignment The assignment to complete
+ * @param {String} video The video url for this completion
  * @param {Object} context The context object passed from express
  * @return {[Object]} A JSON repreentation of the assignment completed
  */
-async function completeAssignment(assignment, context) {
+async function completeAssignment(assignment, video, context) {
 
     // Validate ahead of time
-    var valid = await authCompleteAssignment(assignment, context.requester);
+    var valid = await authCompleteAssignment(assignment, token, context.admin);
     if(!valid) {
         throw new Error("You do not have access to this mutation (CompleteAssignment)");
         return null;
@@ -86,6 +87,9 @@ async function completeAssignment(assignment, context) {
     // Mark the assignment completed in the database
     var results = await database.query("UPDATE targets SET completed=1 WHERE id=?", [assignment]);
     var assignment = await database.query("SELECT * FROM targets WHERE id=?", [assignment]);
+
+    // Save the video evidence
+    await database.query("INSERT INTO completions (assignmentid, video) VALUES (?,?)", [assignment, decodeURIComponent(video)]);
 
     // Kill the player
     await database.query("UPDATE players SET alive=0 WHERE id=?", [assignment[0]["target"]]);

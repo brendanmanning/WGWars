@@ -9,7 +9,7 @@ const {
 } = require('graphql');
 
 const PlayerType = require('../../types/player.js');
-
+const getViewer = require('../../../auth/Viewer.js');
 const { createPlayer, getPlayer, getPlayers } = require('../../../db/players.js');
 
 /**
@@ -27,8 +27,22 @@ var selectPlayer = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, { id , token }) => getPlayer(id, token, false)
+    resolve: (root, { id , token }, context) => getPlayer(id, token, context, false)
 };
+
+/**
+ *  Defines the GraphQL me(token: String) query
+ */
+var me = {
+    type: PlayerType,
+    args: {
+        token: {
+            description: 'Firebase token of the player',
+            type: new GraphQLNonNull(GraphQLString)
+        }
+    },
+    resolve: (root, { token }, context) => getViewer(token, context.admin)
+}
 
 /**
  * Defines the GraphQL players(game: Int, alive: Bool?, count: Int?, offset: Int?)
@@ -53,12 +67,16 @@ var selectPlayers = {
             type: GraphQLInt,
             description: 'How many players should be shown?'
         },
+        token: {
+            type: new GraphQLNonNull(GraphQLString),
+            description: 'A firebase token for providing access'
+        },
         offset: {
             type: GraphQLInt,
             description: 'Specify an offset (useful for pagation)'
         }
     },
-    resolve: (root, { game, alive, paid, count, offset}, context) => getPlayers(game, alive, paid, count, offset, context)
+    resolve: (root, { game, alive, paid, count, offset, token}, context) => getPlayers(game, alive, paid, count, offset, token, context)
 }
 
-module.exports = { selectPlayer, selectPlayers };
+module.exports = { selectPlayer, selectPlayers, me };

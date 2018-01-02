@@ -23,8 +23,8 @@ const createRoundGQL = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {game, token}) => {
-        return createRound(game, token);
+    resolve: (root, {game, token}, context) => {
+        return createRound(game, token, context);
     }
 }
 

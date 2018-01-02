@@ -27,8 +27,8 @@ const createDisputeGQL = {
             description: "What the killed player has to say"
         }
     },
-    resolve: (root, {complainer, assignment, comment}) => {
-        return createDispute(complainer, assignment, comment);
+    resolve: (root, {complainer, assignment, comment}, context) => {
+        return createDispute(complainer, assignment, comment, context);
     }
 }
 

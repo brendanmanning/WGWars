@@ -31,8 +31,8 @@ const createPostGQL = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {game, creator, data, token}) => {
-        return createPost(game, creator, data, token);
+    resolve: (root, {game, creator, data, token}, context) => {
+        return createPost(game, creator, data, token, context);
     }
 }
 

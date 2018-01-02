@@ -23,7 +23,7 @@ var selectDispute = {
             type: new GraphQLNonNull(GraphQLInt)
         }
     },
-    resolve: (root, { id }) => getDispute(id)
+    resolve: (root, { id }, context) => getDispute(id, context)
 };
 
 /**

@@ -12,7 +12,7 @@ var fs = require('fs');
 
 var cors = require('cors');
 var admin = require("firebase-admin");
-
+var get_database_connection = require('./db.js');
 /*
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(fs.readFileSync(__dirname + '/schema.gql'));
@@ -58,14 +58,49 @@ admin.initializeApp({
 
 
 // Bind to GraphQL
-var buildcontext = require('./buildcontext.js');
-app.use('/graphql', graphqlHTTP(async (request, response, graphQLParams) => ({
+app.use('/graphql', graphqlHTTP({
 
     schema: schema,
     graphiql: true,
-    pretty: true
-  
-})));
+    pretty: true,
+    context: {
+      admin: admin
+    }
+}));
+
+// Prepare Stripe
+app.use(require("body-parser").urlencoded({extended: false}));
+const keyPublishable = process.env.PUBLISHABLE_KEY;
+const keySecret = process.env.SECRET_KEY;
+const stripe = require("stripe")(keySecret);
+
+// listen for payment actions
+app.post('/pay', async function(req, res) { 
+
+    try {
+
+        // Mark the player (by id) as paid before taking their money
+        var database = await get_database_connection();
+        await database.query("UPDATE players SET paid=1 WHERE email LIKE ?", [req.body.stripeEmail]);
+
+        // Create the charge
+        let amount = 1000;
+        var customer = await stripe.customers.create({
+            email: req.body.stripeEmail,
+            source: req.body.stripeToken
+        });
+        await stripe.charges.create({
+            amount,
+            description: "Entrance fee for Shanahan Assasian Game",
+            currency: "usd",
+            customer: customer.id
+        })
+
+        res.send('<script>window.location="http://apps.brendanmanning.com/war/thankForStripePayment.php";</script><body>Redirecting...</body>');
+    } catch (error) {
+        res.send('<script>window.location="http://apps.brendanmanning.com/war/errorForStripePayment.php?error=' + error.message + '";</script><body>Redirecting...</body>');
+    }
+});
 
  app.listen(4000);
 console.log('Running a GraphQL API server at localhost:4000/graphql');

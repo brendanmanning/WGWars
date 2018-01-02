@@ -51,7 +51,7 @@ const updatePlayerGQL = {
             description: 'A firebase token for providing access'
         }
     },
-    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates, token}) => {
+    resolve: (root, {id, name, email, image, alive, paid, pnid, coordinates, token}, context) => {
         return updatePlayer(id, {
             name: name,
             email: email,
@@ -60,7 +60,7 @@ const updatePlayerGQL = {
             paid: paid, 
             pnid: pnid, 
             coordinates: coordinates
-        }, token);
+        }, token, context);
     }
 }
 

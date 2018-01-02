@@ -25,7 +25,8 @@ async function createDispute(complainer, assignment, comment) {
     return result;
 }
 
-async function getDispute(id) {
+async function getDispute(id, context) {
+    
     // Get the player record
     var database = await get_database_connection();
     var dispute = await database.query('SELECT * FROM disputes WHERE id=?', [id]);
