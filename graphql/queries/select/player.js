@@ -10,7 +10,7 @@ const {
 
 const PlayerType = require('../../types/player.js');
 const getViewer = require('../../../auth/Viewer.js');
-const { createPlayer, getPlayer, getPlayers } = require('../../../db/players.js');
+const { createPlayer, getPlayer, getPlayerByToken, getPlayers } = require('../../../db/players.js');
 
 /**
  *  Defines the GraphQL player(id: Int) query
@@ -41,7 +41,7 @@ var me = {
             type: new GraphQLNonNull(GraphQLString)
         }
     },
-    resolve: (root, { token }, context) => getViewer(token, context.admin)
+    resolve: (root, { token }, context) => getPlayerByToken(token, context)
 }
 
 /**

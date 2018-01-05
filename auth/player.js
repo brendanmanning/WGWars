@@ -65,7 +65,7 @@ async function authPlayers(objects, token, admin) {
  * @param {String} token FB Auth token
  * @param {Object} admin FB Auth SDK obj
  */
-async function authUpdatePlayer(token, admin) {
+async function authUpdatePlayer(object, token, admin) {
 
     // Get the viewer
     var viewer = await getViewer(token, admin)

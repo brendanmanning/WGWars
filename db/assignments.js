@@ -6,6 +6,18 @@ var {
     authCompleteAssignment 
 } = require('../auth/assignment.js');
 
+var {
+    getGame
+} = require('./games.js');
+
+var {
+    getPlayers
+} = require('./players.js');
+
+var {
+    notifyGameAdmins
+} = require('../actions/notification.js');
+
 /**
  * Gets an assignment with a given id
  * @param {int} id The id of the assignment to get
@@ -87,12 +99,19 @@ async function completeAssignment(assignment, video, context) {
     // Mark the assignment completed in the database
     var results = await database.query("UPDATE targets SET completed=1 WHERE id=?", [assignment]);
     var assignment = await database.query("SELECT * FROM targets WHERE id=?", [assignment]);
+    assignment = assignment[0];
 
     // Save the video evidence
     await database.query("INSERT INTO completions (assignmentid, video) VALUES (?,?)", [assignment, decodeURIComponent(video)]);
 
     // Kill the player
     await database.query("UPDATE players SET alive=0 WHERE id=?", [assignment[0]["target"]]);
+
+    // Check if this was the winning kill
+    var players = await getPlayers(assignment.game, true, true, undefined, undefined, token, context);
+    if(players.length == 1) {
+        await notifyGameAdmins("The game may have finished. Verify assignment id = " + assignment.id, token, context);
+    }
 
     database.destroy();
 

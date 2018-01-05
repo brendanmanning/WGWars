@@ -54,7 +54,7 @@ const mutationType = new GraphQLObjectType({
     fields: {
         createPlayer: createPlayerGQL,
         createRound: createRoundGQL,
-        updatePlayer: updatePlayerGQL,
+        updateSelf: updatePlayerGQL,
         activateRound: activateRoundGQL,
         endRound: endRoundGQL,
         completeAssignment: completeAssignmentGQL,

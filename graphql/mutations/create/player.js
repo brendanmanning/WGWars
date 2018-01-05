@@ -30,6 +30,10 @@ const createPlayerGQL = {
             type: new GraphQLNonNull(GraphQLString),
             description: 'This player\'s Firebase UID'
         },
+        pntoken: {
+            type: GraphQLString,
+            description: 'This player\'s expo push notification token',
+        },
         game: {
             type: new GraphQLNonNull(GraphQLInt),
             description: 'The game this player belongs to'
@@ -39,8 +43,8 @@ const createPlayerGQL = {
             description: 'The geographic coordinates ("latitude,longitude") of this player\'s home'
         }
     },
-    resolve: (root, {name, email, phone, uid, game, coordinates}, context) => {
-        return createPlayer(name, email, phone, uid, game, coordinates, context);
+    resolve: (root, {name, email, phone, uid, pntoken, game, coordinates}, context) => {
+        return createPlayer(name, email, phone, uid, pntoken, game, coordinates, context);
     }
 }
 

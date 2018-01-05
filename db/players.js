@@ -3,6 +3,8 @@ var mysql = require('mysql');
 
 var { authPlayer, authPlayers, authUpdatePlayer } = require('../auth/player.js');
 
+const { isAdmin } = require('../auth/game.js');
+const { getGame } = require('./games.js');
 const { getRound } = require('./rounds.js');
 const { getAssignment } = require('./assignments.js');
 /**
@@ -69,6 +71,12 @@ async function getPlayer(id, token, context, norecurse) {
     var player = await database.query('SELECT * FROM players WHERE id=?', [id]);
     player = player[0];
 
+    // Resolve the game object
+    player['game'] = await getGame(player['game'], token, context);
+
+    // Is the player an admin of this game?
+    player['isAdmin'] = await isAdmin(player['game'].id, token, context.admin);
+
     console.log("PLAYER OBJECT");
     console.log(JSON.stringify(player));
 
@@ -87,30 +95,51 @@ async function getPlayer(id, token, context, norecurse) {
    
     // Get the lastest target assignment's 
     var assignmentid = await database.query("select id from targets WHERE killer=? ORDER BY id DESC LIMIT 1 ", [id]);
-    assignmentid = assignmentid[0]['id'];
-console.log("Assignment id: "+ assignmentid);
     
     // If the player is dead, they don't have a target
-    if(player.alive == false) {
+    if(player.alive == false || assignmentid.length == 0) {
         player.assignment = null;
     } else {
+        assignmentid = assignmentid[0]['id'];
+        console.log("Assignment id: "+ assignmentid);
         player.assignment = await getAssignment(assignmentid, token, context);
     }
 
     if(!player.alive) {
+        
         // If the player is dead, get the assignment in which they were killed
         var killedAssignment = await database.query("SELECT * FROM targets WHERE target=? AND completed=1", [id]);
-        killedAssignment = killedAssignment[0];
+        
+        if(killedAssignment.length > 0) {
+            killedAssignment = killedAssignment[0];
 
-        // Save the round in which they were killed
-        player['eliminationRound'] = killedAssignment.round;
+            // Save the round in which they were killed
+            player['eliminationRoundId'] = killedAssignment.round;
 
-        // Get the player object who killed them
-        player['killer'] = await getPlayer(killedAssignment.killer, token, context, true);
-        player['killer'] = player['killer'][0];
+            // Get the player object who killed them
+            player['killer'] = await getPlayer(killedAssignment.killer, token, context, true);
+            player['killer'] = player['killer'][0];
+
+        }
     }
-    
+
     database.destroy();
+    return player;
+}
+
+async function getPlayerByToken(token, context) {
+    var database = await get_database_connection();
+
+    // Decompose the token to a uid
+    var uid = await context.admin.auth().verifyIdToken(token);
+    uid = uid['user_id'];
+
+    var player = await database.query("SELECT id FROM players WHERE uid LIKE ?", [uid]);
+    var playerid = player[0]['id'];
+
+    console.log("id from token: " + playerid);
+
+    var player = await getPlayer(playerid, token, context, false);
     return player;
 }
 
@@ -124,12 +153,12 @@ console.log("Assignment id: "+ assignmentid);
  * @param {string} coordinates The coordinates of where this player lives. "latitude,longitude"
  * @returns The newly created player as a JSON object
  */
-async function createPlayer(name, email, phone, uid, game, coordinates) {
+async function createPlayer(name, email, phone, uid, pntoken, game, coordinates) {
 
     var database = await get_database_connection();
     var result = await database.query(
-        'INSERT INTO players (name, email, phone, uid, game, coordinates, alive, image) VALUES (?,?,?,?,?,?,?,?)', 
-        [name, email, phone, uid, game, coordinates, 1, "http://www.eurogeosurveys.org/wp-content/uploads/2014/02/default_profile_pic.jpg"]
+        'INSERT INTO players (name, email, phone, uid, expid, game, coordinates, alive, image) VALUES (?,?,?,?,?,?,?,?)', 
+        [name, email, phone, uid, pntoken, game, coordinates, 1, "http://www.eurogeosurveys.org/wp-content/uploads/2014/02/default_profile_pic.jpg"]
     );
     var lastInsertId = result['insertId'];
 
@@ -141,6 +170,7 @@ async function createPlayer(name, email, phone, uid, game, coordinates) {
         email: email,
         phone: phone,
         uid: uid,
+        pnid: pnid,
         game: game,
         coordinates: coordinates,
         alive: 1
@@ -156,10 +186,11 @@ async function createPlayer(name, email, phone, uid, game, coordinates) {
 async function updatePlayer(id, delta, token, context) {
 
     // Get the player first
-    var playerobj = await getPlayer(id, token, context, true);
-
+    var playerobj = await getPlayerByToken(token, context);
+    //var playerobj = await getPlayer(id, token, context, true);
+    
     // Authorize right away
-    var valid = await authUpdatePlayer(token, context.admin)
+    var valid = await authUpdatePlayer(playerobj, token, context.admin)
     if(!valid) {
         throw new Error("You do not have access to this mutation (UpdatePlayer)");
         return null;
@@ -180,13 +211,13 @@ async function updatePlayer(id, delta, token, context) {
         }
     }
 
-    options = [updates, id];
+    options = [updates, playerobj.id];
 
     await database.query(sql, options);
 
     // Reselct the player from the database and return
     sql = "SELECT * FROM players WHERE id=?";
-    options = [id];
+    options = [playerobj.id];
 
     var results = await database.query(sql, options);
 
@@ -212,8 +243,9 @@ async function updateAllActivePlayers(game, delta) {
 }
 
 module.exports = { 
-    getPlayers, 
+    getPlayers,
     getPlayer, 
+    getPlayerByToken,
     createPlayer, 
     updatePlayer,
     updateAllActivePlayers

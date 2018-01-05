@@ -15,8 +15,8 @@ const updatePlayerGQL = {
     description: "Update information for player",
     args: {
         id: {
-            type: new GraphQLNonNull(GraphQLInt),
-            description: "The ID of the player to update"
+            type: GraphQLInt,
+            description: "(IGNORED -- THE TOKEN DETERMINES THE USER INSTEAD) The ID of the player to update"
         },
         name: {
            type: GraphQLString,
