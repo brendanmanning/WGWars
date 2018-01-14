@@ -1,5 +1,4 @@
 var { isAdmin } = require('./game.js');
-const { getGame } = require('../db/rounds.js');
 
 /**
  * Can we create a new round?
@@ -19,7 +18,8 @@ async function authCreateRound(gameid, token, admin) {
  * @param {Object} admin FB auth SDK obj
  */
 async function authActivateRound(round, token, admin) {
-    var gameid = await getGame(round);
+    const { getGameFromRound } = require('../db/rounds.js');
+    var gameid = await getGameFromRound(round);
     var valid = await isAdmin(gameid, token, admin);
     return valid;
 }
@@ -31,7 +31,8 @@ async function authActivateRound(round, token, admin) {
  * @param {Object} admin FB auth SDK obj
  */
 async function authEndRound(round, token, admin) {
-    var gameid = await getGame(round);
+    const { getGameFromRound } = require('../db/rounds.js');
+    var gameid = await getGameFromRound(round);
     var valid = await isAdmin(gameid, token, admin);
     return valid;
 }

@@ -82,7 +82,8 @@ app.post('/pay', async function(req, res) {
         // Mark the player (by id) as paid before taking their money
         var database = await get_database_connection();
         await database.query("UPDATE players SET paid=1 WHERE email LIKE ?", [req.body.stripeEmail]);
-
+        database.destroy();
+        
         // Create the charge
         let amount = 1000;
         var customer = await stripe.customers.create({

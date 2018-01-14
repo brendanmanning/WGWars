@@ -91,6 +91,7 @@ async function completeAssignment(assignment, video, context) {
     var valid = await authCompleteAssignment(assignment, token, context.admin);
     if(!valid) {
         throw new Error("You do not have access to this mutation (CompleteAssignment)");
+        database.destroy();
         return null;
     }
 

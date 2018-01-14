@@ -50,6 +50,7 @@ async function getPlayers(game, alive, paid, count, offset, token, context) {
 
     if(! (await authPlayers(results, token, context.admin))) {
         throw new Error("You do not have access to this resource (Players)");
+        database.destroy();
         return null;
     }
 
@@ -84,6 +85,7 @@ async function getPlayer(id, token, context, norecurse) {
     var valid = await authPlayer(player, token, context.admin)
     if(!valid) {
         throw new Error("You do not have permission to view this resource (Player)");
+        database.destroy();
         return null;
     }
 
@@ -135,6 +137,15 @@ async function getPlayerByToken(token, context) {
     uid = uid['user_id'];
 
     var player = await database.query("SELECT id FROM players WHERE uid LIKE ?", [uid]);
+
+    // Make sure something actually was fetched (the user exists)
+    if(player.length == 0) {
+        throw new Error("Player does not exist.");
+        database.destroy();
+        return;
+    }
+
+    // Get the first (and only) player
     var playerid = player[0]['id'];
 
     console.log("id from token: " + playerid);
@@ -148,17 +159,20 @@ async function getPlayerByToken(token, context) {
  * @param {string} name This user's name (will be publically available)
  * @param {string} email The email of the user (will not be publically available)
  * @param {string} phone The player's phone number
+ * @param {string} image base 64 encoded profile icon
  * @param {string} uid The player's uid property from firebase
  * @param {int} game The game id to attatch this new round to
  * @param {string} coordinates The coordinates of where this player lives. "latitude,longitude"
  * @returns The newly created player as a JSON object
  */
-async function createPlayer(name, email, phone, uid, pntoken, game, coordinates) {
+async function createPlayer(name, email, phone, image, uid, game, coordinates) {
+
+    name = name.toLowerCase();
 
     var database = await get_database_connection();
     var result = await database.query(
-        'INSERT INTO players (name, email, phone, uid, expid, game, coordinates, alive, image) VALUES (?,?,?,?,?,?,?,?)', 
-        [name, email, phone, uid, pntoken, game, coordinates, 1, "http://www.eurogeosurveys.org/wp-content/uploads/2014/02/default_profile_pic.jpg"]
+        'INSERT INTO players (name, email, phone, image, uid, pnid, game, coordinates, alive) VALUES (?,?,?,?,?,?,?,?,?)', 
+        [name, email, phone, image, uid, null, game, coordinates, 1]
     );
     var lastInsertId = result['insertId'];
 
@@ -170,10 +184,10 @@ async function createPlayer(name, email, phone, uid, pntoken, game, coordinates)
         email: email,
         phone: phone,
         uid: uid,
-        pnid: pnid,
         game: game,
         coordinates: coordinates,
-        alive: 1
+        alive: 1,
+        image: image
     };
 }
 
@@ -187,12 +201,23 @@ async function updatePlayer(id, delta, token, context) {
 
     // Get the player first
     var playerobj = await getPlayerByToken(token, context);
-    //var playerobj = await getPlayer(id, token, context, true);
+
+    // Does the player not exist?
+    if(playerobj == undefined) {
+        playerobj = await createPlayer(delta.name, delta.email, delta.phone, delta.uid, undefined, delta.game, undefined);
+    }
+
+    // Does the player still not exist?
+    if(playerobj == undefined) {
+        database.destroy();
+        return undefined;
+    }
     
     // Authorize right away
     var valid = await authUpdatePlayer(playerobj, token, context.admin)
     if(!valid) {
         throw new Error("You do not have access to this mutation (UpdatePlayer)");
+        database.destroy();
         return null;
     }
 

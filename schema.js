@@ -18,6 +18,7 @@ const PlayerType = require('./graphql/types/player.js');
 /**
  * Import any requried GraphQL queries
  */
+const { selectGame } = require('./graphql/queries/select/game.js');
 const { selectPlayer, selectPlayers, me } = require('./graphql/queries/select/player.js');
 const { selectDispute, selectDisputes } = require('./graphql/queries/select/dispute.js');
 const { selectPosts } = require('./graphql/queries/select/post.js');
@@ -28,6 +29,7 @@ const { selectPosts } = require('./graphql/queries/select/post.js');
 const createPlayerGQL = require('./graphql/mutations/create/player.js');
 const createRoundGQL = require('./graphql/mutations/create/round.js');
 const updatePlayerGQL = require('./graphql/mutations/update/player.js');
+const roundChain = require('./graphql/mutations/chains/round.js');
 const activateRoundGQL = require('./graphql/mutations/activate/round.js');
 const endRoundGQL = require('./graphql/mutations/end/round.js');
 const completeAssignmentGQL = require('./graphql/mutations/complete/assignment.js');
@@ -45,6 +47,7 @@ const queryType = new GraphQLObjectType({
         players: selectPlayers,
         dispute: selectDispute,
         disputes: selectDisputes,
+        game: selectGame,
         posts: selectPosts
     })
 });
@@ -53,13 +56,13 @@ const mutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
         createPlayer: createPlayerGQL,
-        createRound: createRoundGQL,
+        
         updateSelf: updatePlayerGQL,
-        activateRound: activateRoundGQL,
-        endRound: endRoundGQL,
+        
         completeAssignment: completeAssignmentGQL,
         createDispute: createDispute,
-        createPost: createPost
+        createPost: createPost,
+        roundChain: roundChain
     }
 })
 

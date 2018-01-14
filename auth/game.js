@@ -1,5 +1,5 @@
 var get_database_connection = require('../db.js');
-var getViewer = require('./Viewer.js');
+const getViewer = require('./Viewer.js');
 
 /**
  * Is a user (by token) tje admin of a game
@@ -19,6 +19,18 @@ async function isAdmin(game, token, admin) {
     return (results.length == 1);
 }
 
+/**
+ * Is the user allowed to view this game?
+ * @param {int} game The game to view
+ * @param {String} token FB auth token
+ * @param {Object} admin FB auth SDK obj
+ */
+async function authViewGame(game, token, admin) {
+    var player = await getViewer(token, admin);
+    return player.game == game;
+}
+
 module.exports = {
-    isAdmin
+    isAdmin,
+    authViewGame
 }

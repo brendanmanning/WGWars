@@ -23,6 +23,7 @@ async function getViewer(token, admin) {
 
     // Did we even get a player?
     if(players.length == 0) {
+        database.destroy();
         return null;
     }
 

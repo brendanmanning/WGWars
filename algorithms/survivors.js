@@ -3,7 +3,6 @@ var { getPlayers, updatePlayer } = require('../db/players.js');
 var { shuffle } = require('./array.js');
 
 var { magicValues } = require('../constants.js');
-
 var get_database_connection = require('../db.js');
 /**
  * Chooses the survivors of a round like so:
@@ -119,8 +118,13 @@ console.log("Assignments: " + JSON.stringify(assignments));
  * @param {int} round id of the round
  * @returns {Object[]} All player objects that killed their target & didn't die
  */
-async function survivors(round) {
-    var dbplayers = await getPlayers(magicValues.game, true, true);
+async function survivors(round, token, context) {
+
+    var { getPlayers, updatePlayer } = require('../db/players.js');
+    var { getGameFromRound } = require('../db/rounds.js');
+    
+    var game = await getGameFromRound(round);
+    var dbplayers = await getPlayers(game.id, true, true, undefined, undefined, token, context);
     var survivors = [];
 
     // Make sure they completed their assignment

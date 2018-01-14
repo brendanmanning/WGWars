@@ -15,8 +15,8 @@ const GameType = new GraphQLObjectType({
         const roundType = require('./round.js');
         return({
          id: {
-             type: new GraphQLNonNull(GraphQLInt),
-             description: 'The unique identifier for this game'
+             type: GraphQLInt,
+             description: 'The unique identifier for this game.'
          },
          currentRound: {
              type: GraphQLInt,
