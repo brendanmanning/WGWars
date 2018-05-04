@@ -33,12 +33,16 @@ var selectDisputes = {
     type: new GraphQLList(DisputeType),
     description: "Selects disputes for a round.",
     args: {
-        round: {
+        game: {
             type: new GraphQLNonNull(GraphQLInt),
-            description: 'Round for which to select disputes'
+            description: 'Game for which to select disputes'
         },
+        currentRoundOnly: {
+            type: new GraphQLBoolean,
+            description: 'Disputes for game\'s current round only?'
+        }
     },
-    resolve: (root, { round }) => getDisputes(round)
+    resolve: (root, { round, currentRoundOnly }) => getDisputes(round, currentRoundOnly)
 }
 
 module.exports = {
